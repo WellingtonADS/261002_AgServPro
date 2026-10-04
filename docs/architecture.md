@@ -22,6 +22,14 @@
 6. Quantidade de técnicos cadastráveis no MVP; conflito se aplica ao técnico atribuído.
 7. Confirmar se conexão contínua atende ao trabalho em campo.
 
+## Próximo incremento enquanto o protótipo é validado
+
+O primeiro fluxo técnico pode ser preparado sem depender da aprovação visual: cadastro do cliente e abertura rápida de uma solicitação. O fluxo deve aceitar equipamento e endereço ainda desconhecidos, manter a solicitação pendente de informações e impedir que ela siga para execução até estar pronta.
+
+Critérios já definidos para esse incremento: TA-01, TA-03, TA-04 e TA-15 em `requirements.md`; RN-01 e RN-02 em `business-rules.md`. Assim, não é necessário criar outra especificação para esse fluxo.
+
+Antes de criar tabelas, migrations ou autenticação, confirmar se o MVP será SaaS para várias prestadoras e escolher a stack. Se multiempresa for confirmada, cada registro operacional deverá ficar isolado por prestadora desde o início. A camada visual do fluxo será ajustada ao protótipo depois da aprovação.
+
 ## Modelo conceitual inicial
 
 Entidades candidatas, sujeitas à definição do produto e da stack: Prestadora, Usuário, Cliente, Local de atendimento, Equipamento, Solicitação/OS, Orçamento, Item de orçamento, Agendamento, Registro de execução, Anexo e Histórico de alterações.
