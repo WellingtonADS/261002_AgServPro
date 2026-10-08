@@ -44,10 +44,13 @@ A stack está aprovada; alguns componentes ainda não estão instalados ou imple
 
 Os documentos canônicos do projeto ficam em `docs/`.
 
+- [Mapa da documentação](docs/README.md)
 - [Produto e escopo](docs/PRODUCT.md)
+- [Roadmap do MVP](docs/roadmap.md)
 - [Requisitos e critérios de aceite](docs/requirements.md)
 - [Regras de negócio](docs/business-rules.md)
 - [Arquitetura e decisões pendentes](docs/architecture.md)
+- [ADR 001 — Arquitetura base](docs/decisions/001-arquitetura-base.md)
 - [Design e protótipo](docs/design.md)
 - [Instruções para desenvolvimento com IA](AGENTS.md)
 
@@ -97,10 +100,7 @@ O workflow do GitHub Actions executa essas validações. A base atual ainda não
 
 ## Próximos passos
 
-1. Concluir a validação do protótipo com o cliente.
-2. Definir o fluxo de criação da prestadora, autenticação e convite de técnicos.
-3. Definir e implementar o isolamento de dados por prestadora.
-4. Iniciar a primeira fatia funcional conforme os requisitos aprovados.
+Consulte o [roadmap](docs/roadmap.md) para acompanhar marcos e pendências.
 
 ## Contribuição
 
