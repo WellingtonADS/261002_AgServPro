@@ -7,7 +7,7 @@
 - Aplicação web responsiva para computador e celular.
 - SaaS para várias prestadoras, com isolamento dos dados por prestadora desde a primeira versão.
 - Monólito modular para manter simples o desenvolvimento e a operação inicial.
-- PostgreSQL como banco proposto.
+- Banco relacional PostgreSQL com migrations versionadas por Flyway.
 - Perfis propostos: proprietário/gestor e técnico.
 - Cliente final sem conta; consulta e resposta ao orçamento por link.
 - Operação online no MVP; modo offline não foi aprovado.
@@ -31,7 +31,7 @@
 
 ## Arquitetura aprovada para o MVP
 
-| Camada | Recomendação | Motivo |
+| Camada | Decisão | Motivo |
 |---|---|---|
 | Backend | Java 21 + Spring Boot, como monólito modular | Aproveita a experiência existente do projeto com Java 21 e mantém regras, autenticação e integrações no backend. |
 | API | REST/JSON, versionada em `/api/v1`, descrita com OpenAPI | Atende formulários, agenda e fluxo operacional; mantém contrato claro entre frontend e backend. |
