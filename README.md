@@ -7,7 +7,7 @@ Sistema para organizar atendimentos de prestadores de serviços de climatizaçã
 - Fase: definição do MVP e validação final do protótipo.
 - Repositório: documentação inicial; aplicação ainda não implementada.
 - Protótipo: aguarda aprovação final após correção da responsividade.
-- Stack e arquitetura definitiva: pendentes.
+- SaaS multiempresa: aprovado; stack e mecanismos técnicos de isolamento pendentes.
 
 ## Escopo inicial
 
