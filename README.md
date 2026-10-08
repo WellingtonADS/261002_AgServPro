@@ -5,9 +5,9 @@ Sistema para organizar atendimentos de prestadores de serviços de climatizaçã
 ## Situação
 
 - Fase: definição do MVP e validação final do protótipo.
-- Repositório: documentação inicial; aplicação ainda não implementada.
+- Repositório: documentação e base técnica inicial; fluxos de negócio ainda não implementados.
 - Protótipo: aguarda aprovação final após correção da responsividade.
-- SaaS multiempresa: aprovado; stack e mecanismos técnicos de isolamento pendentes.
+- SaaS multiempresa e stack do MVP: aprovados.
 
 ## Escopo inicial
 
@@ -24,6 +24,11 @@ Ficam fora do MVP: gestão de PMOC, integração automática com WhatsApp ou Ins
 - [Design e protótipo](docs/design.md)
 - [Instruções para desenvolvimento com IA](AGENTS.md)
 
-## Execução
+## Base técnica
 
-Ainda não há aplicação executável nem comandos de instalação. Esta seção será atualizada após a definição da stack e a primeira implementação.
+- `backend/`: API Java 21 com Spring Boot.
+- `frontend/`: Vue 3 com TypeScript e Vite.
+- `backend/openapi.yaml`: contrato inicial REST.
+- `.github/workflows/build.yml`: compilação do backend e build do frontend.
+
+Os fluxos de autenticação, cadastro e operação ainda serão implementados conforme as decisões pendentes em [arquitetura](docs/architecture.md).

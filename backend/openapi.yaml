@@ -1,0 +1,23 @@
+openapi: 3.1.0
+info:
+  title: AgServPro API
+  version: 0.1.0
+  description: API REST do AgServPro.
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/v1/health:
+    get:
+      summary: Verifica a disponibilidade da API
+      responses:
+        '200':
+          description: API disponível
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    const: UP
