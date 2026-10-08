@@ -40,7 +40,7 @@ Permitir que o prestador acompanhe um atendimento desde a solicitação até o e
 
 ## Premissas e pendências
 
-- SaaS para várias prestadoras ainda precisa de confirmação.
+- SaaS multiempresa aprovado para o MVP. O mecanismo técnico de isolamento está pendente.
 - O MVP foi pensado para uso com internet; operação offline não foi aprovada.
 - Atendimento comercial sem exigência de PMOC ainda precisa ser delimitado.
 - O protótipo HTML corrigido aguarda aprovação final de responsividade.
