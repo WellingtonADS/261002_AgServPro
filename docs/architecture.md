@@ -56,8 +56,6 @@ Critérios já definidos para esse incremento: TA-01, TA-03, TA-04 e TA-15 em `r
 
 Antes de implementar autenticação e autorização, definir o fluxo de criação da prestadora e convite de técnicos. A camada visual do fluxo será ajustada ao protótipo depois da aprovação.
 
-## Modelo conceitual inicial
+## Modelo de dados
 
-Entidades candidatas, sujeitas à definição do produto e da stack: Prestadora, Usuário, Cliente, Local de atendimento, Equipamento, Solicitação/OS, Orçamento, Item de orçamento, Agendamento, Registro de execução, Anexo e Histórico de alterações.
-
-Antes de criar tabelas ou migrations, revisar o modelo com as regras de acesso e a decisão sobre SaaS multiempresa.
+A proposta lógica de entidades, vínculos, integridade, índices e pendências está em [Modelo lógico de dados](architecture/data-model.md). Ela ainda precisa ser revisada antes de criar tabelas ou migrations, especialmente quanto ao modelo de isolamento multiempresa, autenticação e estados da OS.
