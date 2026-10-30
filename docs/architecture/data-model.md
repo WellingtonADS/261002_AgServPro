@@ -116,7 +116,7 @@ Recomenda-se usar colunas textuais com validação controlada por aplicação e 
 5. Definir a numeração visível de OS e orçamentos por prestadora.
 6. Fechar estados e comportamento quando um orçamento é recusado.
 7. Definir proteção, expiração, revogação e conteúdo autorizado pelo link do cliente.
-8. Definir dados mínimos da conclusão e limites/retensão de anexos.
+8. Definir dados mínimos da conclusão e limites/retenção de anexos.
 9. Confirmar a regra de duração e a constraint final de conflito de agenda.
 
 ## Fora deste modelo inicial
