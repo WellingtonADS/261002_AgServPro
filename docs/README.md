@@ -17,6 +17,7 @@ Este diretório reúne as fontes canônicas do produto e da implementação. Ant
 | Documento | Fonte de verdade para |
 |---|---|
 | [Arquitetura](architecture.md) | Visão técnica aprovada e decisões ainda pendentes |
+| [Modelo lógico de dados](architecture/data-model.md) | Entidades, relacionamentos, integridade e índices propostos |
 | [ADR 001 — Base técnica](decisions/001-arquitetura-base.md) | Registro das decisões de arquitetura aprovadas |
 
 ## Desenvolvimento
