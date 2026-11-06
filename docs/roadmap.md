@@ -29,16 +29,16 @@ Este roadmap organiza o trabalho pelas etapas 6.1 a 6.10 do Development Manual. 
 ## Próxima sequência
 
 1. Definir criação da prestadora, autenticação, convite e vínculo de usuários.
-2. Detalhar estados e transições da solicitação, triagem, orçamento recusado e conversão em OS.
+2. Detalhar estados da solicitação e da OS, incluindo arquivamento após recusa e criação de cópia independente.
 3. Revisar o modelo lógico para refletir solicitação e OS separadas e confirmar o isolamento multiempresa.
-4. Preparar tarefas para cadastro de cliente, solicitação, triagem e conversão, usando os critérios existentes.
+4. Preparar tarefas para cadastro de cliente, solicitação, triagem, conversão e cópia de solicitação arquivada, usando os critérios existentes.
 5. Implementar essa fatia, incluindo migrations necessárias, e validar que a OS só surge quando os critérios de conversão forem atendidos.
 6. Seguir para orçamento, agenda, execução e histórico conforme os requisitos existentes.
 7. Após a aprovação final do protótipo, registrar a referência visual aprovada e refiná-la durante a implementação da interface.
 
 ## Pendências para etapas posteriores
 
-- Se a recusa do orçamento encerra a solicitação ou permite revisão/novo orçamento.
+- Quais campos da solicitação arquivada serão preenchidos por padrão na cópia.
 - Duração, reagendamento e histórico de horários.
 - Dados obrigatórios para conclusão.
 - Segurança, expiração e revogação do link do cliente.
