@@ -15,7 +15,7 @@ Este documento detalha o modelo conceitual citado em [architecture.md](../archit
 - Uma OS pode ter vários agendamentos e registros de execução, permitindo reagendamento e visitas de retorno com histórico.
 - Cada registro operacional pertence a uma prestadora. O backend obtém o escopo a partir da identidade autenticada, nunca de um `prestadora_id` aceito do navegador.
 - Usuários e prestadoras são entidades separadas; a associação ocorre por `prestadora_usuario`. O administrador SaaS tem papel de plataforma; diretor, gerência e colaborador são papéis internos da prestadora.
-- O administrador SaaS provisiona o primeiro acesso do diretor; o diretor conclui a configuração da prestadora. Quem cria os acessos de gerência e colaborador ainda precisa ser definido.
+- O administrador SaaS provisiona o primeiro acesso do diretor; o diretor conclui a configuração da prestadora e cria os acessos de gerência e colaborador. A matriz de permissões ainda será validada.
 
 ## Diagrama
 
@@ -122,7 +122,7 @@ Recomenda-se usar colunas textuais com validação controlada por aplicação e 
 
 ## Pontos a confirmar antes das migrations
 
-1. Definir autenticação e forma segura de provisionar o primeiro diretor; decidir se o registro preliminar da prestadora é criado pelo admin SaaS ou durante a configuração do diretor; definir quem cria acessos de gerência e colaborador.
+1. Definir autenticação e forma segura de provisionar o primeiro diretor; decidir se o registro preliminar da prestadora é criado pelo admin SaaS ou durante a configuração do diretor; validar a matriz de permissões dos perfis.
 2. Aprovar o modelo PostgreSQL compartilhado com escopo por prestadora e definir se haverá proteção adicional por RLS.
 3. Definir se um usuário pode participar de mais de uma prestadora e se e-mail é único globalmente.
 4. Definir a numeração visível de OS e orçamentos por prestadora.
