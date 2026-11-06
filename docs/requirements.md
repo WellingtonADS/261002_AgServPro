@@ -17,7 +17,7 @@
 | US-09 | Prestador | Encerrar a OS com resultado e confirmação de quem recebeu o serviço. |
 | US-10 | Prestador | Consultar o histórico por cliente ou equipamento. |
 | US-11 | Prestador | Registrar rapidamente pedidos recebidos pelo WhatsApp, mesmo com endereço ou equipamento pendentes. |
-| US-12 | Prestador | Criar uma nova solicitação usando uma solicitação arquivada como modelo, sem alterar o registro original. |
+| US-12 | Prestador | Abrir uma cópia completa e editável de uma solicitação arquivada e salvar uma nova, preservando o registro original. |
 | CL-01 | Cliente | Consultar o orçamento pelo link e aprovar ou recusar sem criar conta. |
 | CL-02 | Cliente | Receber data, faixa de horário e responsável; o envio pode ser manual no MVP. |
 | CL-03 | Cliente | Receber resumo do serviço realizado e do resultado. |
@@ -46,7 +46,7 @@
 | TA-17 | No atendimento agendado, mostrar data e horário e oferecer “Falar pelo WhatsApp” e “Ver orçamento”. |
 | TA-18 | Ao concluir a OS, mostrar ao cliente resumo do serviço e resultado. |
 | TA-19 | Criar OS vinculada à solicitação somente após triagem concluída e, quando necessário, aprovação do orçamento; permitir conversão sem orçamento quando a triagem indicar que ele não é necessário. |
-| TA-20 | Ao recusar orçamento, arquivar a solicitação sem criar OS. Permitir iniciar uma nova solicitação a partir dela, com novo ID e estado Recebida, sem copiar orçamento, decisão, OS, agendamentos ou execução; preservar o registro original. |
+| TA-20 | Ao recusar orçamento, arquivar a solicitação sem criar OS. Permitir abrir uma cópia completa e editável do conteúdo, incluindo itens do orçamento como novo rascunho. Ao salvar, criar solicitação com novo ID e estado Recebida, sem herdar aprovação/recusa, OS, agendamentos, execução, links ou eventos; preservar o registro original. |
 
 ## Observações
 
