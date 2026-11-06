@@ -12,7 +12,7 @@
 | US-04 | Prestador | Fazer triagem da solicitação e indicar se precisa de diagnóstico presencial antes do orçamento ou da conversão em OS. |
 | US-05 | Prestador | Preparar orçamento vinculado à solicitação e registrar aprovação ou recusa antes de convertê-la em OS, quando orçamento for necessário; arquivar a solicitação recusada. |
 | US-06 | Prestador | Agendar atendimento, informar responsável e evitar horários sobrepostos para o mesmo técnico. |
-| US-07 | Técnico | Consultar a OS criada após triagem e registrar execução, materiais, fotos e observações. |
+| US-07 | Colaborador (técnico) | Consultar OS atribuídas no celular e registrar diagnóstico, execução, materiais, fotos, observações e resultado. |
 | US-08 | Prestador | Manter a solicitação sem OS enquanto faltar aprovação; manter a OS aberta quando faltar peça ou visita de retorno. |
 | US-09 | Prestador | Encerrar a OS com resultado e confirmação de quem recebeu o serviço. |
 | US-10 | Prestador | Consultar o histórico por cliente ou equipamento. |
