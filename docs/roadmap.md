@@ -38,7 +38,6 @@ Este roadmap organiza o trabalho pelas etapas 6.1 a 6.10 do Development Manual. 
 
 ## Pendências para etapas posteriores
 
-- Quais campos da solicitação arquivada serão preenchidos por padrão na cópia.
 - Duração, reagendamento e histórico de horários.
 - Dados obrigatórios para conclusão.
 - Segurança, expiração e revogação do link do cliente.
