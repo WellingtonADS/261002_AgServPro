@@ -138,7 +138,7 @@ O formato do corpo de erro deve ser padronizado antes da implementação dos end
 
 1. Confirmar nomes em inglês para rotas e JSON.
 2. A separação solicitação/OS, o arquivamento após recusa e o comportamento da cópia total estão definidos; fechar payloads e estados da conversão.
-3. Fechar autenticação, vínculo usuário–prestadora e regra de isolamento.
+3. Fechar autenticação, vínculo usuário–prestadora, provisionamento inicial do diretor, permissões dos perfis e regra de isolamento.
 4. Definir campos obrigatórios e estado inicial da solicitação incompleta.
 6. Definir o formato comum de paginação e erro.
 
