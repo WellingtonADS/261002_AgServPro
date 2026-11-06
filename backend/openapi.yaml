@@ -2,22 +2,45 @@ openapi: 3.1.0
 info:
   title: AgServPro API
   version: 0.1.0
-  description: API REST do AgServPro.
+  description: |
+    Contrato dos endpoints atualmente implementados no AgServPro.
+    A API usa REST/JSON e mantém seus caminhos versionados em /api/v1.
 servers:
   - url: http://localhost:8080
+    description: Ambiente local de desenvolvimento
+tags:
+  - name: Health
+    description: Disponibilidade da aplicação
 paths:
   /api/v1/health:
     get:
-      summary: Verifica a disponibilidade da API
+      operationId: getHealth
+      tags:
+        - Health
+      summary: Verifica se a aplicação está respondendo
+      description: |
+        Retorna o status fixo UP. Não verifica banco de dados ou dependências externas.
       responses:
         '200':
-          description: API disponível
+          description: Aplicação respondeu à requisição
           content:
             application/json:
               schema:
-                type: object
-                required: [status]
-                properties:
-                  status:
-                    type: string
-                    const: UP
+                $ref: '#/components/schemas/HealthResponse'
+              examples:
+                available:
+                  summary: Aplicação disponível
+                  value:
+                    status: UP
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          const: UP
+          description: Status fixo retornado pelo endpoint atual.
