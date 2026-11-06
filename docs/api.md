@@ -116,7 +116,8 @@ Os detalhes desses sub-recursos também aparecem na consulta de `GET /customers/
 | Recurso | Rotas propostas | Requisitos relacionados |
 |---|---|---|
 | Orçamentos | `GET/POST /api/v1/service-requests/{requestId}/budgets`; após conversão, decisões de serviço adicional podem ser vinculadas à OS | TA-06 e TA-10 |
-| Ordens de serviço | `GET /api/v1/service-orders?status=&customerId=&page=&size=`; `GET /api/v1/service-orders/{orderId}`; `POST /api/v1/service-requests/{requestId}/conversion` | TA-19 |\n| Agenda | `GET /api/v1/appointments?from=&to=&technicianId=&status=`; `POST /api/v1/service-orders/{orderId}/appointments`; `GET/PATCH /api/v1/appointments/{appointmentId}` | TA-07, RN-10 a RN-13 |
+| Ordens de serviço | `GET /api/v1/service-orders?status=&customerId=&page=&size=`; `GET /api/v1/service-orders/{orderId}`; `POST /api/v1/service-requests/{requestId}/conversion` | TA-19 |
+| Agenda | `GET /api/v1/appointments?from=&to=&technicianId=&status=`; `POST /api/v1/service-orders/{orderId}/appointments`; `GET/PATCH /api/v1/appointments/{appointmentId}` | TA-07, RN-10 a RN-13 |
 | Execução | `GET/POST /api/v1/service-orders/{orderId}/executions`; `PATCH /api/v1/executions/{executionId}` | TA-08, TA-09, TA-11 e TA-12 |
 | Histórico | `GET /api/v1/service-orders/{orderId}/events` | TA-13 e TA-14 |
 
