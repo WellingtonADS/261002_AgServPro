@@ -83,7 +83,7 @@ Tipos indicados são PostgreSQL. IDs usam `uuid`; datas e horários usam `timest
 3. `prestadora_usuario` deve validar o vínculo do usuário à prestadora antes de permitir atribuição como técnico, abertura ou edição de registros.
 4. O escopo da prestadora deve vir da identidade autenticada no backend; não aceitar o escopo do corpo ou dos parâmetros enviados pelo frontend.
 5. O cancelamento deve preservar a OS e seu histórico. Não apagar registros para representar cancelamento.
-6. O estado do orçamento deve ser separado do estado da OS, permitindo orçamento recusado sem encerrar automaticamente a OS.
+6. O estado do orçamento é separado do estado da solicitação. Se o orçamento for recusado, a solicitação é arquivada; após a conversão, orçamentos adicionais mantêm seu próprio estado sem substituir o histórico da OS.
 7. A conclusão deve exigir resultado e confirmação do recebimento, conforme RN-07 e TA-12.
 8. Para impedir sobreposição concorrente no PostgreSQL, recomenda-se constraint de exclusão por `prestadora_id`, `tecnico_usuario_id` e intervalo `[inicio_em, fim_em)`, ignorando agendamentos cancelados. A validação apenas na tela não garante a regra RN-10 sob requisições simultâneas.
 9. A solicitação arquivada não é alterada pela cópia; cada cópia recebe novo ID, estado inicial e `solicitacao_origem_id`, e não herda orçamento, OS, agendamento ou execução.
