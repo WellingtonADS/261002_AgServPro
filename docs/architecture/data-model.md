@@ -8,7 +8,7 @@ Este documento detalha o modelo conceitual citado em [architecture.md](../archit
 
 ## Premissas do modelo
 
-- A solicitação é um registro próprio durante a entrada, triagem e orçamento. A OS é criada depois da triagem e, quando necessária, da aprovação do orçamento.
+- **Decisão confirmada pelo responsável:** solicitação e OS são registros distintos. A OS é criada depois da triagem e, quando necessária, da aprovação do orçamento.
 - A solicitação pode ficar incompleta, sem local ou equipamento, conforme RN-01. Cliente, relato e origem bastam para registrá-la.
 - Cada solicitação pode originar no máximo uma OS. O orçamento inicial pertence à solicitação; orçamentos adicionais permanecem associados à solicitação e à OS já criada.
 - Uma OS pode ter vários agendamentos e registros de execução, permitindo reagendamento e visitas de retorno com histórico.
@@ -117,15 +117,14 @@ Recomenda-se usar colunas textuais com validação controlada por aplicação e 
 
 ## Pontos a confirmar antes das migrations
 
-1. Confirmar a separação entre solicitação e OS: OS criada após triagem e aprovação do orçamento quando necessário.
-2. Fechar o fluxo de criação da prestadora, autenticação e convite de técnicos.
-3. Aprovar o modelo PostgreSQL compartilhado com escopo por prestadora e definir se haverá proteção adicional por RLS.
-4. Definir se um usuário pode participar de mais de uma prestadora e se e-mail é único globalmente.
-5. Definir a numeração visível de OS e orçamentos por prestadora.
-6. Fechar estados e comportamento da solicitação quando um orçamento é recusado.
-7. Definir proteção, expiração, revogação e conteúdo autorizado pelo link do cliente.
-8. Definir dados mínimos da conclusão e limites/retenção de anexos.
-9. Confirmar a regra de duração e a constraint final de conflito de agenda.
+1. Fechar o fluxo de criação da prestadora, autenticação e convite de técnicos.
+2. Aprovar o modelo PostgreSQL compartilhado com escopo por prestadora e definir se haverá proteção adicional por RLS.
+3. Definir se um usuário pode participar de mais de uma prestadora e se e-mail é único globalmente.
+4. Definir a numeração visível de OS e orçamentos por prestadora.
+5. Fechar estados e comportamento da solicitação quando um orçamento é recusado.
+6. Definir proteção, expiração, revogação e conteúdo autorizado pelo link do cliente.
+7. Definir dados mínimos da conclusão e limites/retenção de anexos.
+8. Confirmar a regra de duração e a constraint final de conflito de agenda.
 
 ## Fora deste modelo inicial
 
