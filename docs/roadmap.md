@@ -1,47 +1,53 @@
 # Roadmap do AgServPro
 
-Este roadmap acompanha a evolução do MVP por marcos. Não define datas: cada etapa avança quando suas decisões e critérios estão prontos.
+Este roadmap organiza o trabalho pelas etapas 6.1 a 6.10 do Development Manual. Não define datas: cada etapa avança quando suas decisões e critérios de saída estão prontos. As etapas iteram; uma descoberta pode reabrir uma decisão anterior.
 
 ## Estado atual
 
-- **Produto:** escopo e requisitos iniciais documentados.
-- **Design:** protótipo responsivo em validação final pelo cliente.
-- **Arquitetura:** SaaS multiempresa e stack aprovados.
-- **Banco de dados:** modelo lógico proposto em `docs/architecture/data-model.md`; aguardando revisão antes das migrations.
-- **Base técnica:** scaffold de API e frontend, contrato OpenAPI inicial e workflow de build no PR #1, ainda em rascunho.
-- **Funcionalidades:** fluxos de negócio ainda não implementados.
+- **Produto e requisitos:** fontes iniciais registradas em `PRODUCT.md`, `requirements.md` e `business-rules.md`.
+- **Design:** protótipo responsivo aguarda aprovação final do prestador; ver `design.md`.
+- **Arquitetura:** SaaS multiempresa e stack aprovados; autenticação e mecanismo final de isolamento seguem pendentes.
+- **Banco de dados:** modelo lógico proposto em `architecture/data-model.md`, ainda em revisão.
+- **Base técnica:** scaffold e endpoint de saúde existentes; as funcionalidades de negócio ainda não foram implementadas.
+- **Primeira entrega funcional:** cadastro de cliente e abertura rápida de solicitação, conforme critérios existentes.
 
-## Marcos
+## Etapas do ciclo de desenvolvimento
 
-| Marco | Situação | Condição para avançar |
-|---|---|---|
-| Base de produto, documentação e scaffold | Em andamento | Integrar a base técnica após revisão do PR; manter as fontes canônicas atualizadas |
-| Aprovação do protótipo | Pendente | Cliente validar a versão responsiva e o fluxo navegável |
-| Acesso e isolamento multiempresa | Pendente | Definir criação da prestadora, autenticação, convite de técnicos e aplicação do escopo da prestadora |
-| Modelo relacional | Em revisão | Validar entidades, vínculos, constraints e decisões abertas em [modelo lógico](architecture/data-model.md) |
-| Primeira fatia funcional | Pendente | Implementar cadastro do cliente e abertura rápida de solicitação conforme TA-01, TA-03, TA-04 e TA-15 |
-| Fluxo operacional do MVP | Pendente | Implementar orçamento, agenda com bloqueio de conflito, OS, execução, pendências/retornos, conclusão e histórico |
-| Validação para uso real | Pendente | Validar critérios de aceite, isolamento entre prestadoras, link do cliente, anexos e procedimento de publicação |
+| Etapa do manual | Situação | Foco no AgServPro | Condição para avançar |
+|---|---|---|---|
+| **6.1 Preparação e alinhamento** | Em andamento | Confirmar objetivos, responsáveis, restrições e critérios para considerar o MVP pronto. | Escopo de entrega e critérios de aceite do MVP alinhados. |
+| **6.2 Estratégia e requisitos** | Em andamento | Consolidar o escopo, as histórias e prioridades nos documentos existentes. | Primeira entrega funcional e itens fora do MVP claramente delimitados. |
+| **6.3 Análise** | Em revisão | Fechar regras operacionais, estados da OS e o recorte entre solicitação e OS; revisar o modelo lógico. | Regras e entidades necessárias à primeira entrega sem ambiguidades bloqueadoras. |
+| **6.4 Arquitetura e projeto técnico** | Parcialmente concluída | Stack e monólito modular aprovados; fechar criação da prestadora, autenticação, vínculo de usuários e isolamento. | Acesso multiempresa e modelo de dados inicial definidos antes de persistir dados operacionais. |
+| **6.5 Planejamento de execução** | Em andamento | Transformar a primeira fatia em tarefas pequenas com critérios de aceite e impacto conhecido. | Tarefas de cadastro de cliente e solicitação prontas para execução. |
+| **6.6 Migração e dados** | Não aplicável no momento | Não há migração de dados existentes prevista para o MVP. As migrations de esquema do banco serão tratadas na implementação. | Reavaliar se surgir uma fonte de dados legado a importar. |
+| **6.7 Implementação** | Base técnica iniciada; negócio pendente | Implementar uma fatia vertical por vez, mantendo documentação e contrato da API sincronizados. | Primeira fatia funcional concluída conforme seus critérios de aceite. |
+| **6.8 Validação e qualidade** | Pendente | Conferir critérios funcionais, isolamento entre prestadoras, uso em celular e homologação com o prestador. | Fluxos críticos aceitos e problemas bloqueadores resolvidos. |
+| **6.9 Go-Live** | Pendente | Definir hospedagem, domínio, configuração, publicação e procedimento de retorno. | Checklist de publicação e verificações pós-deploy definidos e executados. |
+| **6.10 Operação e evolução** | Pendente | Preparar suporte, operação e priorização da evolução após o uso real. | Responsáveis e rotina de acompanhamento definidos para o MVP publicado. |
 
-## Próximas ações
+## Próxima sequência
 
-1. Revisar o modelo lógico e fechar o recorte entre solicitação e ordem de serviço.
-2. Definir o fluxo de criação da prestadora, autenticação e convite de técnicos.
-3. Aprovar o mecanismo de autorização e isolamento por prestadora antes de persistir dados operacionais.
-4. Fechar estados e integridade do modelo; então criar migrations versionadas com Flyway.
-5. Implementar cadastro de cliente e abertura rápida de solicitação conforme os critérios existentes.
-6. Evoluir para orçamento, agenda e ordem de serviço conforme os requisitos e regras existentes.
+1. Definir criação da prestadora, autenticação, convite e vínculo de usuários.
+2. Fechar o modelo inicial da OS: solicitação separada ou mesma entidade, estados e transições.
+3. Revisar o modelo lógico à luz dessas decisões e confirmar o isolamento multiempresa.
+4. Preparar tarefas executáveis para cadastro de cliente e abertura rápida de solicitação, usando os critérios já existentes.
+5. Implementar essa fatia, incluindo migrations necessárias, e validar seu comportamento.
+6. Seguir para orçamento, agenda, execução e histórico conforme os requisitos existentes.
+7. Após a aprovação final do protótipo, registrar a referência visual aprovada e refiná-la durante a implementação da interface.
 
-## Pendências que afetam etapas posteriores
+## Pendências para etapas posteriores
 
-- Expiração, revogação e proteção do link de acompanhamento do cliente.
-- Limites e retenção para fotos e anexos.
-- Quantidade de técnicos no MVP.
-- Confirmação de que conexão contínua atende ao uso em campo.
+- Recusa de orçamento e seu efeito sobre a OS.
+- Duração, reagendamento e histórico de horários.
+- Dados obrigatórios para conclusão.
+- Segurança, expiração e revogação do link do cliente.
+- Limites e retenção de fotos e anexos.
+- Quantidade de técnicos no MVP e confirmação do uso com conexão contínua.
 - Hospedagem, domínio e deploy.
 
-As pendências técnicas detalhadas ficam em [architecture.md](architecture.md); o escopo e os critérios ficam em [PRODUCT.md](PRODUCT.md) e [requirements.md](requirements.md).
+As regras e critérios funcionais ficam em [Regras de negócio](business-rules.md) e [Requisitos](requirements.md); as decisões técnicas ficam em [Arquitetura](architecture.md) e [Modelo lógico de dados](architecture/data-model.md). Este roadmap aponta a sequência e as condições de avanço, sem copiar o conteúdo dessas fontes.
 
 ## Manutenção
 
-Atualize este documento quando um marco mudar de situação ou quando uma decisão alterar a ordem do trabalho. Use issues e Pull Requests para acompanhar tarefas; não replique aqui as histórias e critérios de aceite.
+Atualize a situação quando uma etapa ou condição de saída mudar. Use issues e Pull Requests para acompanhar tarefas; não replique aqui histórias, critérios de aceite ou especificações já registradas.
