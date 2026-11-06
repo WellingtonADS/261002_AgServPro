@@ -16,6 +16,11 @@
 - **RN-14 — Recusa e arquivamento:** quando o cliente recusar o orçamento, arquivar a solicitação e não criar uma OS. A solicitação arquivada permanece no histórico e pode ser usada como base para criar outra solicitação.
 - **RN-15 — Cópia de solicitação:** usar uma solicitação arquivada como modelo abre um novo formulário preenchido com todo o conteúdo editável da solicitação, incluindo dados do cliente/serviço, informações de triagem e itens do orçamento recusado. O usuário pode editar antes de salvar. Ao salvar, cria-se uma solicitação independente, com novo identificador e estado inicial; itens de orçamento começam como novo rascunho, sem aprovação/recusa. OS, agendamentos, execuções, links e eventos históricos não são copiados; a solicitação arquivada original permanece inalterada.
 
+## Acesso e configuração da prestadora
+
+- **RN-16 — Acesso inicial:** o administrador do sistema SaaS provisiona o acesso inicial do diretor. O diretor conclui a configuração da prestadora.
+- **RN-17 — Papéis:** o perfil administrador SaaS é da plataforma; diretor, gerência e colaborador são perfis no âmbito de uma prestadora. As permissões associadas e quem cria os acessos de gerência/colaborador ainda serão definidos.
+
 ## Agenda
 
 - **RN-10 — Conflito:** bloquear intervalos sobrepostos para o mesmo técnico e informar o horário conflitante.
