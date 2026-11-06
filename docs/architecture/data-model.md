@@ -103,6 +103,7 @@ Tipos indicados são PostgreSQL. IDs usam `uuid`; datas e horários usam `timest
 - `evento_solicitacao (prestadora_id, solicitacao_id, criado_em)` para timeline pré-OS.
 - `evento_os (prestadora_id, ordem_servico_id, criado_em)` para timeline da OS.
 - `link_cliente (token_hash)` único para busca do link recebido pelo cliente.
+- `solicitacao (prestadora_id, solicitacao_origem_id)` para localizar solicitações derivadas, quando usado.
 
 Índices devem ser confirmados pelas consultas implementadas; estes são os índices iniciais esperados pelos fluxos do MVP.
 
@@ -124,10 +125,9 @@ Recomenda-se usar colunas textuais com validação controlada por aplicação e 
 2. Aprovar o modelo PostgreSQL compartilhado com escopo por prestadora e definir se haverá proteção adicional por RLS.
 3. Definir se um usuário pode participar de mais de uma prestadora e se e-mail é único globalmente.
 4. Definir a numeração visível de OS e orçamentos por prestadora.
-6. Definir proteção, expiração, revogação e conteúdo autorizado pelo link do cliente.
-7. Definir dados mínimos da conclusão e limites/retenção de anexos.
-8. `solicitacao (prestadora_id, solicitacao_origem_id)` para localizar solicitações derivadas, quando usado.
-9. Confirmar a regra de duração e a constraint final de conflito de agenda.
+5. Definir proteção, expiração, revogação e conteúdo autorizado pelo link do cliente.
+6. Definir dados mínimos da conclusão e limites/retenção de anexos.
+7. Confirmar a regra de duração e a constraint final de conflito de agenda.
 
 ## Fora deste modelo inicial
 
