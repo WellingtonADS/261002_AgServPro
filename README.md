@@ -83,7 +83,9 @@ Inicie o PostgreSQL local pela raiz do repositório:
 docker compose up -d
 ```
 
-Na primeira inicialização, o Flyway cria o esquema de acesso e as políticas de isolamento. As credenciais padrão do Compose servem apenas para desenvolvimento local; em outros ambientes, configure `DB_URL`, `DB_USERNAME` e `DB_PASSWORD` com valores próprios. Para criar o Administrador SaaS inicial, configure `ADMIN_SAAS_EMAIL` e `ADMIN_SAAS_PASSWORD` no ambiente da API; use uma senha com pelo menos 12 caracteres. A senha não tem valor padrão.
+Na primeira inicialização, o Compose cria um usuário de aplicação sem privilégio de superusuário e o Flyway cria o esquema de acesso e as políticas de isolamento. As credenciais padrão servem apenas para desenvolvimento local; em outros ambientes, configure `DB_URL`, `DB_USERNAME` e `DB_PASSWORD` com valores próprios. Para criar o Administrador SaaS inicial, configure `ADMIN_SAAS_EMAIL` e `ADMIN_SAAS_PASSWORD` no ambiente da API; use uma senha com pelo menos 12 caracteres. A senha não tem valor padrão.
+
+Em ambientes HTTPS, configure `APP_PUBLIC_URL` para o endereço do frontend e `SESSION_COOKIE_SECURE=true` para proteger o cookie de sessão.
 
 Em um terminal, inicie a API:
 

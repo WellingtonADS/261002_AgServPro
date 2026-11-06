@@ -126,7 +126,7 @@ Recomenda-se usar colunas textuais com validação controlada por aplicação e 
 - O Administrador SaaS provisiona uma prestadora em `PENDENTE_CONFIGURACAO` e o vínculo inicial `DIRETOR`.
 - Convites guardam somente hash do token, com expiração, aceite e revogação.
 - `prestadora`, `prestadora_usuario`, `convite_acesso` e `auditoria_saas` usam RLS. O contexto é definido pelo backend na transação com `app.usuario_id`, `app.prestadora_id` ou `app.admin_saas`; políticas de prestadora confirmam o vínculo ativo do usuário.
-- O usuário de banco da aplicação não pode ser superusuário nem receber `BYPASSRLS`; em produção, credenciais de migração e de execução devem ser separadas antes do deploy.
+- O usuário de banco da aplicação não pode ser superusuário nem receber `BYPASSRLS`. O Compose cria um usuário de aplicação separado do administrador local do PostgreSQL; em produção, credenciais de migração e de execução devem ser separadas antes do deploy.
 - A migration ainda não cria as tabelas operacionais de clientes, solicitações ou OS; elas dependem da revisão do modelo e serão acrescentadas nas migrations seguintes.
 
 ## Pontos a confirmar antes das próximas migrations
