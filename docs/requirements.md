@@ -10,13 +10,14 @@
 | US-02 | Prestador | Cadastrar equipamentos do cliente e consultar serviços anteriores por equipamento. |
 | US-03 | Prestador | Registrar solicitações com canal, serviço pedido, local e problema relatado. |
 | US-04 | Prestador | Fazer triagem da solicitação e indicar se precisa de diagnóstico presencial antes do orçamento ou da conversão em OS. |
-| US-05 | Prestador | Preparar orçamento vinculado à solicitação e registrar aprovação ou recusa antes de convertê-la em OS, quando orçamento for necessário. |
+| US-05 | Prestador | Preparar orçamento vinculado à solicitação e registrar aprovação ou recusa antes de convertê-la em OS, quando orçamento for necessário; arquivar a solicitação recusada. |
 | US-06 | Prestador | Agendar atendimento, informar responsável e evitar horários sobrepostos para o mesmo técnico. |
 | US-07 | Técnico | Consultar a OS criada após triagem e registrar execução, materiais, fotos e observações. |
 | US-08 | Prestador | Manter a solicitação sem OS enquanto faltar aprovação; manter a OS aberta quando faltar peça ou visita de retorno. |
 | US-09 | Prestador | Encerrar a OS com resultado e confirmação de quem recebeu o serviço. |
 | US-10 | Prestador | Consultar o histórico por cliente ou equipamento. |
 | US-11 | Prestador | Registrar rapidamente pedidos recebidos pelo WhatsApp, mesmo com endereço ou equipamento pendentes. |
+| US-12 | Prestador | Criar uma nova solicitação usando uma solicitação arquivada como modelo, sem alterar o registro original. |
 | CL-01 | Cliente | Consultar o orçamento pelo link e aprovar ou recusar sem criar conta. |
 | CL-02 | Cliente | Receber data, faixa de horário e responsável; o envio pode ser manual no MVP. |
 | CL-03 | Cliente | Receber resumo do serviço realizado e do resultado. |
@@ -45,6 +46,7 @@
 | TA-17 | No atendimento agendado, mostrar data e horário e oferecer “Falar pelo WhatsApp” e “Ver orçamento”. |
 | TA-18 | Ao concluir a OS, mostrar ao cliente resumo do serviço e resultado. |
 | TA-19 | Criar OS vinculada à solicitação somente após triagem concluída e, quando necessário, aprovação do orçamento; permitir conversão sem orçamento quando a triagem indicar que ele não é necessário. |
+| TA-20 | Ao recusar orçamento, arquivar a solicitação sem criar OS. Permitir iniciar uma nova solicitação a partir dela, com novo ID e estado Recebida, sem copiar orçamento, decisão, OS, agendamentos ou execução; preservar o registro original. |
 
 ## Observações
 
