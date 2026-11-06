@@ -21,7 +21,7 @@ Permitir que o prestador acompanhe o atendimento desde a solicitação, passando
 - Cadastro rápido de solicitações recebidas pelo WhatsApp, mesmo com dados pendentes.
 - Triagem da solicitação e distinção entre relato do cliente e diagnóstico técnico.
 - Orçamento vinculado à solicitação, com registro de aprovação ou recusa quando necessário.
-- Arquivamento de solicitações com orçamento recusado e possibilidade de usá-las como modelo para uma nova solicitação.
+- Arquivamento de solicitações com orçamento recusado e possibilidade de abrir uma cópia completa e editável como base para uma nova solicitação.
 - Conversão da solicitação em OS somente após triagem e, quando exigido, aprovação do orçamento.
 - Agenda e atribuição de responsável, bloqueando conflito de horário para o mesmo técnico.
 - Ordem de serviço consultável e atualizável no celular.
