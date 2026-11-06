@@ -59,3 +59,20 @@ Antes de implementar autenticação e autorização, definir o fluxo de criaçã
 ## Modelo de dados
 
 A proposta lógica de entidades, vínculos, integridade, índices e pendências está em [Modelo lógico de dados](architecture/data-model.md). Ela ainda precisa ser revisada antes de criar tabelas ou migrations, especialmente quanto ao modelo de isolamento multiempresa, autenticação e estados da OS.
+
+## Camadas de negócio e organização do backend (proposta)
+
+Esta separação descreve o destino do backend; ainda não está implementada. A organização seguirá o monólito modular aprovado, com módulos agrupados por funcionalidade e regras de negócio protegidas da tecnologia de transporte e persistência.
+
+| Camada | Responsabilidade |
+|---|---|
+| API / apresentação | Receber chamadas REST, validar formato dos dados, chamar um caso de uso e montar a resposta HTTP. Não concentra regras do negócio. |
+| Aplicação | Executar casos de uso e coordenar etapas da operação, transação e acesso aos dados. |
+| Domínio | Representar conceitos e aplicar regras e transições do negócio, como quando uma solicitação pode avançar para execução. Deve evitar dependência de Spring, HTTP ou banco. |
+| Infraestrutura | Implementar persistência e integrações usadas pelos casos de uso, inicialmente PostgreSQL/Flyway quando essa parte for construída. |
+
+O fluxo esperado é: endpoint → caso de uso → regras do domínio → persistência → resposta. Exemplo: abrir solicitação recebe os dados pela API, executa as validações e regras definidas para a solicitação, salva o resultado e devolve a resposta. Os critérios funcionais permanecem em `requirements.md` e `business-rules.md`; este desenho não os duplica.
+
+Os módulos devem acompanhar as funcionalidades necessárias, por exemplo `clientes` e `solicitacoes` no primeiro incremento. Outras áreas, como agenda, orçamento e execução de OS, entram quando forem implementadas. Cada módulo mantém seus componentes próximos; código compartilhado só deve ser extraído quando houver reutilização real.
+
+O escopo da prestadora continua sendo obtido no backend a partir da identidade autenticada, conforme a decisão acima. O mecanismo concreto de autenticação e isolamento segue pendente. O backend atual contém apenas a aplicação Spring Boot e o endpoint de saúde; estas camadas são uma proposta, não uma descrição do código existente.
