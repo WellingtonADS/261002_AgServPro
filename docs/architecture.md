@@ -8,7 +8,7 @@
 - SaaS para várias prestadoras, com isolamento dos dados por prestadora desde a primeira versão.
 - Monólito modular para manter simples o desenvolvimento e a operação inicial.
 - Banco relacional PostgreSQL com migrations versionadas por Flyway.
-- Perfis na plataforma: administrador SaaS. Perfis dentro de cada prestadora: diretor, gerência e colaborador. As permissões detalhadas ainda precisam ser definidas.
+- Perfis na plataforma: administrador SaaS com controle total do sistema. Perfis de cada prestadora: diretor, gerência e colaborador (técnico de campo). A matriz detalhada de permissões está em validação.
 - Cliente final sem conta; consulta e resposta ao orçamento por link.
 - Operação online no MVP; modo offline não foi aprovado.
 - Fotos e anexos vinculados à OS, em armazenamento separado do banco.
