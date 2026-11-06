@@ -15,7 +15,7 @@
 
 ## Decisões pendentes
 
-1. Forma de autenticação e entrega segura do acesso inicial; definir também quem cria acessos de gerência e colaborador e quais permissões cada perfil terá.
+1. Forma de autenticação e entrega segura do acesso inicial; decidir se o registro preliminar da prestadora é criado pelo admin SaaS ou pelo diretor durante a configuração; definir também quem cria acessos de gerência e colaborador e quais permissões cada perfil terá.
 2. Como aplicar e validar o isolamento por prestadora no banco e na aplicação.
 3. Expiração, revogação e proteção do link do cliente.
 4. Armazenamento, limites e retenção de fotos/anexos.
