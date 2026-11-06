@@ -45,9 +45,14 @@ public class AdminBootstrap implements ApplicationRunner {
             throw new IllegalStateException("ADMIN_SAAS_PASSWORD deve ter pelo menos 12 caracteres e no máximo 72 bytes UTF-8.");
         }
 
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM usuario WHERE lower(email) = ?", Integer.class, email);
-        if (count != null && count > 0) {
+        if (userExists(email)) {
+            Boolean isPlatformAdmin = jdbcTemplate.queryForObject(
+                    "SELECT EXISTS (SELECT 1 FROM usuario WHERE lower(email) = ? AND papel_plataforma = 'ADMIN_SAAS')",
+                    Boolean.class,
+                    email);
+            if (!Boolean.TRUE.equals(isPlatformAdmin)) {
+                throw new IllegalStateException("ADMIN_SAAS_EMAIL já pertence a uma conta que não é Administrador SaaS.");
+            }
             return;
         }
 
@@ -60,5 +65,11 @@ public class AdminBootstrap implements ApplicationRunner {
                 email,
                 passwordEncoder.encode(password));
         logger.info("Administrador SaaS inicial criado para {}.", email);
+    }
+
+    private boolean userExists(String email) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM usuario WHERE lower(email) = ?", Integer.class, email);
+        return count != null && count > 0;
     }
 }

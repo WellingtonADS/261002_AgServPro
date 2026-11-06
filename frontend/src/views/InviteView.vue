@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { sendAuthRequest } from '../api/auth'
 
 const route = useRoute()
 const router = useRouter()
-const token = computed(() => typeof route.query.token === 'string' ? route.query.token : '')
+const token = ref(typeof route.query.token === 'string' ? route.query.token : '')
 const name = ref('')
 const password = ref('')
 const passwordConfirmation = ref('')
 const error = ref('')
 const busy = ref(false)
+
+onMounted(() => {
+  if (token.value) void router.replace('/convite')
+})
 
 async function acceptInvitation() {
   error.value = ''

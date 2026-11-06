@@ -63,7 +63,8 @@ public class AuthenticationController {
     }
 
     @GetMapping("/csrf")
-    public CsrfResponse csrf(CsrfToken csrfToken) {
+    public CsrfResponse csrf(CsrfToken csrfToken, HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store");
         return new CsrfResponse(csrfToken.getToken());
     }
 
@@ -72,6 +73,7 @@ public class AuthenticationController {
             @Valid @RequestBody LoginRequest login,
             HttpServletRequest request,
             HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store");
         Authentication authentication;
         try {
             if (login.password().getBytes(StandardCharsets.UTF_8).length > 72) {
@@ -109,7 +111,8 @@ public class AuthenticationController {
 
     @GetMapping("/me")
     @Transactional(readOnly = true)
-    public CurrentUserResponse currentUser(Authentication authentication) {
+    public CurrentUserResponse currentUser(Authentication authentication, HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store");
         AgServProUserDetails user = (AgServProUserDetails) authentication.getPrincipal();
         if ("ADMIN_SAAS".equals(user.papelPlataforma())) {
             return new CurrentUserResponse(user.id(), user.email(), user.papelPlataforma(), List.of());

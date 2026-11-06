@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -27,7 +28,11 @@ public class AdminProvisioningController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProvisionResponse provision(@Valid @RequestBody ProvisionRequest request, Authentication authentication) {
+    public ProvisionResponse provision(
+            @Valid @RequestBody ProvisionRequest request,
+            Authentication authentication,
+            HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store");
         AgServProUserDetails actor = (AgServProUserDetails) authentication.getPrincipal();
         AdminProvisioningService.ProvisionedDirector result = provisioningService.provisionDirector(
                 request.nomePrestadora(), request.nomeDiretor(), request.emailDiretor(), actor);
