@@ -28,7 +28,7 @@ Este roadmap organiza o trabalho pelas etapas 6.1 a 6.10 do Development Manual. 
 
 ## Próxima sequência
 
-1. Fechar autenticação e provisionamento: o admin SaaS cria o acesso inicial do diretor, que conclui a configuração da prestadora; decidir quando é criado o registro da prestadora e quem cria acessos de gerência/colaborador e suas permissões.
+1. Fechar autenticação e provisionamento: o admin SaaS cria o acesso inicial do diretor; o diretor conclui a configuração e cria os acessos internos. Decidir quando é criado o registro da prestadora e validar a matriz de permissões proposta.
 2. Detalhar estados da solicitação e da OS, incluindo arquivamento após recusa e criação de cópia independente.
 3. Revisar o modelo lógico para refletir solicitação e OS separadas e confirmar o isolamento multiempresa.
 4. Preparar tarefas para cadastro de cliente, solicitação, triagem, conversão e cópia de solicitação arquivada, usando os critérios existentes.
