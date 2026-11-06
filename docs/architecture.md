@@ -26,6 +26,7 @@
 ## Decisão aprovada
 
 - O produto será SaaS multiempresa desde o MVP. Os registros operacionais devem pertencer a uma prestadora, e o acesso de uma prestadora não pode expor dados de outra.
+- Solicitação e OS são registros distintos. A OS só é criada após a triagem e, quando o orçamento for necessário, após sua aprovação. Decisão confirmada pelo responsável em 2026-11-06.
 - A decisão foi confirmada pelo responsável em 2026-10-08. A tecnologia usada para impor esse isolamento permanece pendente.
 - Stack aprovada pelo responsável em 2026-10-08: Java 21 + Spring Boot; API REST/JSON documentada com OpenAPI; PostgreSQL + Flyway; Vue 3 + TypeScript + Vite + Vue Router; PrimeVue com tema personalizado. O protótipo HTML continua em validação e será referência visual após aprovação.
 
