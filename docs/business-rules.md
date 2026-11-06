@@ -14,7 +14,7 @@
 - **RN-08 — Cancelamento:** registrar motivo ao cancelar solicitação ou OS. Uma OS cancelada deixa de ocupar horário ativo, mas permanece no histórico.
 - **RN-09 — Histórico:** cada OS deve ser consultável por cliente e, quando houver equipamento associado, por equipamento; a solicitação de origem deve permanecer acessível.
 - **RN-14 — Recusa e arquivamento:** quando o cliente recusar o orçamento, arquivar a solicitação e não criar uma OS. A solicitação arquivada permanece no histórico e pode ser usada como base para criar outra solicitação.
-- **RN-15 — Cópia de solicitação:** copiar uma solicitação cria um novo registro independente, com novo identificador e estado inicial. A cópia não herda orçamento, decisão de aprovação/recusa, OS, agendamento ou execução; a solicitação arquivada original não é alterada.
+- **RN-15 — Cópia de solicitação:** usar uma solicitação arquivada como modelo abre um novo formulário preenchido com todo o conteúdo editável da solicitação, incluindo dados do cliente/serviço, informações de triagem e itens do orçamento recusado. O usuário pode editar antes de salvar. Ao salvar, cria-se uma solicitação independente, com novo identificador e estado inicial; itens de orçamento começam como novo rascunho, sem aprovação/recusa. OS, agendamentos, execuções, links e eventos históricos não são copiados; a solicitação arquivada original permanece inalterada.
 
 ## Agenda
 
@@ -36,7 +36,6 @@ Uma solicitação sem orçamento necessário pode ser convertida após a triagem
 
 ## Pontos a confirmar
 
-- Quais campos da solicitação devem vir preenchidos por padrão ao criar uma cópia.
 - Campos e evidências obrigatórios para concluir uma OS.
 - Como reagendamento registra motivo e histórico sem apagar o horário anterior.
 - Validade e revogação do link privado de acompanhamento.
