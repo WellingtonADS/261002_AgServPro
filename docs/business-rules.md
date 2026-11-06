@@ -13,6 +13,8 @@
 - **RN-07 — Conclusão:** concluir a OS somente após registrar o serviço realizado, o resultado e a confirmação de quem recebeu.
 - **RN-08 — Cancelamento:** registrar motivo ao cancelar solicitação ou OS. Uma OS cancelada deixa de ocupar horário ativo, mas permanece no histórico.
 - **RN-09 — Histórico:** cada OS deve ser consultável por cliente e, quando houver equipamento associado, por equipamento; a solicitação de origem deve permanecer acessível.
+- **RN-14 — Recusa e arquivamento:** quando o cliente recusar o orçamento, arquivar a solicitação e não criar uma OS. A solicitação arquivada permanece no histórico e pode ser usada como base para criar outra solicitação.
+- **RN-15 — Cópia de solicitação:** copiar uma solicitação cria um novo registro independente, com novo identificador e estado inicial. A cópia não herda orçamento, decisão de aprovação/recusa, OS, agendamento ou execução; a solicitação arquivada original não é alterada.
 
 ## Agenda
 
@@ -23,18 +25,18 @@
 
 ## Estados propostos
 
-- **Solicitação:** recebida, aguardando informações, em triagem, aguardando diagnóstico, aguardando orçamento, aguardando aprovação, convertida em OS, encerrada ou cancelada.
+- **Solicitação:** recebida, aguardando informações, em triagem, aguardando diagnóstico, aguardando orçamento, aguardando aprovação, convertida em OS, arquivada ou cancelada.
 - **Orçamento:** rascunho, enviado, aprovado, recusado ou cancelado.
 - **OS:** aberta, agendada, em atendimento, aguardando peça/retorno, concluída ou cancelada.
 - **Agendamento:** agendado, confirmado, em atendimento, concluído ou cancelado.
 
 Fluxo de referência: Solicitação → Triagem → (Informações pendentes | Diagnóstico | Orçamento, quando necessário) → Aprovação do orçamento, quando necessário → Conversão em OS → Agendamento → Atendimento → (Peça/retorno | Conclusão).
 
-Uma solicitação sem orçamento necessário pode ser convertida após a triagem. Recusar um orçamento não cria uma OS; o destino da solicitação recusada ainda precisa ser definido.
+Uma solicitação sem orçamento necessário pode ser convertida após a triagem. Recusar um orçamento arquiva a solicitação e não cria uma OS. A solicitação arquivada pode ser copiada para iniciar uma nova solicitação independente.
 
 ## Pontos a confirmar
 
-- Se a recusa do orçamento encerra a solicitação ou permite revisão/novo orçamento.
+- Quais campos da solicitação devem vir preenchidos por padrão ao criar uma cópia.
 - Campos e evidências obrigatórios para concluir uma OS.
 - Como reagendamento registra motivo e histórico sem apagar o horário anterior.
 - Validade e revogação do link privado de acompanhamento.
