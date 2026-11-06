@@ -94,6 +94,21 @@ Content-Type: application/json
 
 O backend define `status` e `providerId`. Eles não são aceitos do corpo da requisição. Campos obrigatórios e regra de estado inicial serão fechados com os critérios TA-03, TA-04 e TA-15.
 
+### Cadastro completo do cliente
+
+Para manter o primeiro cadastro enxuto, cliente, contato principal e OS podem ser criados no fluxo inicial. Contatos, locais e equipamentos adicionais usam sub-recursos:
+
+| Método e rota proposta | Uso |
+|---|---|
+| `POST /api/v1/customers/{customerId}/contacts` | Adicionar contato |
+| `PATCH /api/v1/customers/{customerId}/contacts/{contactId}` | Atualizar contato |
+| `POST /api/v1/customers/{customerId}/locations` | Adicionar local de atendimento |
+| `PATCH /api/v1/customers/{customerId}/locations/{locationId}` | Atualizar local |
+| `POST /api/v1/customers/{customerId}/equipment` | Cadastrar equipamento |
+| `PATCH /api/v1/customers/{customerId}/equipment/{equipmentId}` | Atualizar equipamento |
+
+Os detalhes desses sub-recursos também aparecem na consulta de `GET /customers/{customerId}`. Exclusão física não está prevista; a regra para inativação ainda precisa ser definida.
+
 ## Próximas rotas do MVP
 
 | Recurso | Rotas propostas | Requisitos relacionados |
