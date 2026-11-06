@@ -32,6 +32,7 @@ erDiagram
     EQUIPAMENTO o|--o{ SOLICITACAO : envolve
     SOLICITACAO ||--o{ DIAGNOSTICO : registra
     SOLICITACAO ||--o{ ORCAMENTO : recebe
+    SOLICITACAO ||--o{ EVENTO_SOLICITACAO : registra
     SOLICITACAO ||--o| ORDEM_SERVICO : converte_em
     ORDEM_SERVICO ||--o{ ORCAMENTO : pode_ter
     ORCAMENTO ||--o{ ITEM_ORCAMENTO : contem
@@ -42,7 +43,7 @@ erDiagram
     EXECUCAO o|--o{ ANEXO : documenta
     ORDEM_SERVICO ||--o{ ANEXO : possui
     ORDEM_SERVICO ||--o{ EVENTO_OS : historico
-    ORDEM_SERVICO ||--o{ LINK_CLIENTE : compartilha
+    SOLICITACAO ||--o{ LINK_CLIENTE : compartilha
 ```
 
 A solicitação exige um cliente, mas pode não ter local ou equipamento no registro inicial. A OS referencia a solicitação de origem e só passa a existir depois da triagem e das aprovações necessárias.
@@ -60,7 +61,8 @@ Tipos indicados são PostgreSQL. IDs usam `uuid`; datas e horários usam `timest
 | `cliente_contato` | `id`, `prestadora_id`, `cliente_id`, `nome`, `telefone`, `email`, `principal` | Um cliente pode ter mais de um contato. Telefone não deve ser chave única sem regra aprovada. |
 | `local_atendimento` | `id`, `prestadora_id`, `cliente_id`, `apelido`, `cep`, `logradouro`, `numero`, `complemento`, `bairro`, `cidade`, `uf`, `referencia` | Endereço pertencente ao cliente; pode faltar na abertura rápida. |
 | `equipamento` | `id`, `prestadora_id`, `cliente_id`, `local_id`, `tipo`, `marca`, `modelo`, `numero_serie`, `observacoes` | Equipamento pertence ao cliente e pode ser associado a um local. Modelo/serial podem estar ausentes inicialmente. |
-| `solicitacao` | `id`, `prestadora_id`, `cliente_id`, `local_id`, `equipamento_id`, `aberta_por`, `canal_origem`, `servico_solicitado`, `relato_cliente`, `status`, `criado_em`, `atualizado_em`, `encerrada_em`, `motivo_encerramento` | Registro inicial do pedido, triagem e dados de origem. Cliente e relato são obrigatórios; local/equipamento são opcionais. Não é uma OS. |\n| `ordem_servico` | `id`, `prestadora_id`, `solicitacao_id`, `numero`, `status`, `criada_por`, `criado_em`, `atualizado_em`, `cancelada_em`, `motivo_cancelamento` | Criada somente após triagem e orçamento aprovado quando necessário. `solicitacao_id` é único por prestadora; os dados da solicitação são consultados pela relação, sem duplicação. |
+| `solicitacao` | `id`, `prestadora_id`, `cliente_id`, `local_id`, `equipamento_id`, `aberta_por`, `canal_origem`, `servico_solicitado`, `relato_cliente`, `status`, `criado_em`, `atualizado_em`, `encerrada_em`, `motivo_encerramento`, `cancelada_em`, `motivo_cancelamento` | Registro inicial do pedido, triagem e dados de origem. Cliente e relato são obrigatórios; local/equipamento são opcionais. Não é uma OS. |
+| `ordem_servico` | `id`, `prestadora_id`, `solicitacao_id`, `numero`, `status`, `criada_por`, `criado_em`, `atualizado_em`, `cancelada_em`, `motivo_cancelamento` | Criada somente após triagem e orçamento aprovado quando necessário. `solicitacao_id` é único por prestadora; os dados da solicitação são consultados pela relação, sem duplicação. |
 | `diagnostico` | `id`, `prestadora_id`, `solicitacao_id`, `registrado_por`, `descricao`, `criado_em` | Registra triagem/diagnóstico antes da criação da OS, separado do relato do cliente. |
 | `orcamento` | `id`, `prestadora_id`, `solicitacao_id`, `ordem_servico_id`, `orcamento_origem_id`, `tipo`, `versao`, `status`, `validade_ate`, `enviado_em`, `respondido_em`, `forma_resposta`, `observacao_resposta`, `criado_por` | O orçamento inicial pertence à solicitação; `ordem_servico_id` fica vazio até a conversão. Orçamentos adicionais vinculam-se também à OS. Manter registros anteriores preserva versões e aprovações. |
 | `item_orcamento` | `id`, `prestadora_id`, `orcamento_id`, `descricao`, `quantidade`, `valor_unitario`, `ordem` | Preço é uma fotografia da proposta; não depende de catálogo de estoque, que está fora do MVP. Total calculado pela soma dos itens. |
@@ -68,7 +70,8 @@ Tipos indicados são PostgreSQL. IDs usam `uuid`; datas e horários usam `timest
 | `execucao` | `id`, `prestadora_id`, `ordem_servico_id`, `agendamento_id`, `tecnico_usuario_id`, `diagnostico`, `servico_realizado`, `resultado`, `recebido_por`, `iniciada_em`, `finalizada_em`, `confirmada_em` | Registra o que foi feito e seu resultado. Pode haver vários registros por OS em caso de retorno. |
 | `material_execucao` | `id`, `prestadora_id`, `execucao_id`, `descricao`, `quantidade`, `unidade` | Registra materiais usados como descrição e quantidade; não movimenta estoque. |
 | `anexo` | `id`, `prestadora_id`, `ordem_servico_id`, `execucao_id`, `chave_objeto`, `nome_original`, `tipo_mime`, `tamanho_bytes`, `enviado_por`, `criado_em` | Arquivo binário fica em armazenamento de objetos; banco guarda metadados e vínculo. |
-| `evento_solicitacao` | `id`, `prestadora_id`, `solicitacao_id`, `tipo`, `status_anterior`, `status_novo`, `descricao`, `registrado_por`, `criado_em` | Histórico da entrada, triagem, decisões de orçamento, conversão e encerramento da solicitação. |\n| `evento_os` | `id`, `prestadora_id`, `ordem_servico_id`, `tipo`, `status_anterior`, `status_novo`, `descricao`, `registrado_por`, `criado_em` | Histórico da OS, incluindo cancelamento e reagendamento. |
+| `evento_solicitacao` | `id`, `prestadora_id`, `solicitacao_id`, `tipo`, `status_anterior`, `status_novo`, `descricao`, `registrado_por`, `criado_em` | Histórico da entrada, triagem, decisões de orçamento, conversão e encerramento da solicitação. |
+| `evento_os` | `id`, `prestadora_id`, `ordem_servico_id`, `tipo`, `status_anterior`, `status_novo`, `descricao`, `registrado_por`, `criado_em` | Histórico da OS, incluindo cancelamento e reagendamento. |
 | `link_cliente` | `id`, `prestadora_id`, `solicitacao_id`, `token_hash`, `expira_em`, `revogado_em`, `criado_em` | Armazena hash do token, nunca o token em texto puro. O link acompanha orçamento e, após conversão, a OS relacionada; política de expiração e escopo ainda precisa ser definida. |
 
 ## Regras de integridade e isolamento
@@ -104,7 +107,8 @@ Tipos indicados são PostgreSQL. IDs usam `uuid`; datas e horários usam `timest
 
 Os estados abaixo seguem a proposta em [business-rules.md](../business-rules.md) e ainda precisam da validação ali indicada:
 
-- **Solicitação:** recebida, aguardando informações, em triagem, aguardando diagnóstico, aguardando orçamento, aguardando aprovação, convertida em OS, encerrada ou cancelada.\n- **OS:** aberta, agendada, em atendimento, aguardando peça/retorno, concluída ou cancelada.
+- **Solicitação:** recebida, aguardando informações, em triagem, aguardando diagnóstico, aguardando orçamento, aguardando aprovação, convertida em OS, encerrada ou cancelada.
+- **OS:** aberta, agendada, em atendimento, aguardando peça/retorno, concluída ou cancelada.
 - **Orçamento:** rascunho, enviado, aprovado, recusado ou cancelado.
 - **Agendamento:** agendado, confirmado, em atendimento, concluído ou cancelado.
 - **Vínculo de usuário:** convite pendente, ativo ou suspenso.
