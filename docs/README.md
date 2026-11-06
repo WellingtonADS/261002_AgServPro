@@ -18,7 +18,7 @@ Este diretório reúne as fontes canônicas do produto e da implementação. Ant
 |---|---|
 | [Arquitetura](architecture.md) | Visão técnica aprovada e decisões ainda pendentes |
 | [Modelo lógico de dados](architecture/data-model.md) | Entidades, relacionamentos, integridade e índices propostos |
-| [Documentação da API](api.md) | Endpoints atualmente implementados e instruções de uso |
+| [Documentação da API](api.md) | Endpoint implementado, proposta de rotas e instruções de uso |
 | [Contrato OpenAPI](../backend/openapi.yaml) | Especificação técnica dos endpoints disponíveis |
 | [ADR 001 — Base técnica](decisions/001-arquitetura-base.md) | Registro das decisões de arquitetura aprovadas |
 
