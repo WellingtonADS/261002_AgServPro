@@ -1,7 +1,7 @@
 # Modelo lógico de dados — AgServPro
 
-**Status:** proposta para revisão; ainda não convertida em migrations.  
-**Banco aprovado:** PostgreSQL.  
+**Status:** migration inicial de acesso aplicada no código; entidades operacionais ainda são proposta para revisão.
+**Banco aprovado:** PostgreSQL.
 **Escopo:** entidades do MVP e vínculos entre prestadora, atendimento, orçamento, agenda e execução.
 
 Este documento detalha o modelo conceitual citado em [architecture.md](../architecture.md). Os tipos e constraints são recomendações para orientar a implementação. Decisões abertas estão listadas ao final.
@@ -120,11 +120,20 @@ Os estados abaixo seguem a proposta em [business-rules.md](../business-rules.md)
 
 Recomenda-se usar colunas textuais com validação controlada por aplicação e migração, evitando enums rígidos antes de o fluxo de estados ser fechado.
 
-## Pontos a confirmar antes das migrations
+## Decisões já aplicadas na migration inicial
 
-1. Definir autenticação e forma segura de provisionar o primeiro diretor; decidir se o registro preliminar da prestadora é criado pelo admin SaaS ou durante a configuração do diretor; validar a matriz de permissões dos perfis.
-2. Aprovar o modelo PostgreSQL compartilhado com escopo por prestadora e definir se haverá proteção adicional por RLS.
-3. Definir se um usuário pode participar de mais de uma prestadora e se e-mail é único globalmente.
+- Identidade usa e-mail único global e senha armazenada como hash; o papel de plataforma é distinto dos papéis em `prestadora_usuario`.
+- O Administrador SaaS provisiona uma prestadora em `PENDENTE_CONFIGURACAO` e o vínculo inicial `DIRETOR`.
+- Convites guardam somente hash do token, com expiração, aceite e revogação.
+- `prestadora`, `prestadora_usuario`, `convite_acesso` e `auditoria_saas` usam RLS. O contexto é definido pelo backend na transação com `app.prestadora_id` ou `app.admin_saas`.
+- O usuário de banco da aplicação não pode ser superusuário nem receber `BYPASSRLS`; em produção, credenciais de migração e de execução devem ser separadas antes do deploy.
+- A migration ainda não cria as tabelas operacionais de clientes, solicitações ou OS; elas dependem da revisão do modelo e serão acrescentadas nas migrations seguintes.
+
+## Pontos a confirmar antes das próximas migrations
+
+1. Validar a matriz de permissões dos perfis.
+2. Definir a estratégia de sessão e a entrega da URL de convite.
+3. Definir se um usuário pode participar de mais de uma prestadora; o esquema atual permite múltiplos vínculos.
 4. Definir a numeração visível de OS e orçamentos por prestadora.
 5. Definir proteção, expiração, revogação e conteúdo autorizado pelo link do cliente.
 6. Definir dados mínimos da conclusão e limites/retenção de anexos.

@@ -6,9 +6,9 @@ Este roadmap organiza o trabalho pelas etapas 6.1 a 6.10 do Development Manual. 
 
 - **Produto e requisitos:** fontes iniciais registradas em `PRODUCT.md`, `requirements.md` e `business-rules.md`.
 - **Design:** protótipo responsivo aguarda aprovação final do prestador; ver `design.md`.
-- **Arquitetura:** SaaS multiempresa e stack aprovados; autenticação e mecanismo final de isolamento seguem pendentes.
-- **Banco de dados:** modelo lógico proposto em `architecture/data-model.md`, ainda em revisão.
-- **Base técnica:** scaffold e endpoint de saúde existentes; as funcionalidades de negócio ainda não foram implementadas.
+- **Arquitetura:** provisionamento do diretor, e-mail/senha, PostgreSQL com RLS e stack aprovados; sessão e matriz completa de permissões seguem pendentes.
+- **Banco de dados:** migration inicial cria identidade, prestadora, vínculo, convite, auditoria e RLS; entidades operacionais continuam em revisão.
+- **Base técnica:** conexão PostgreSQL, Flyway e endpoint de saúde; provisionamento e funcionalidades operacionais ainda não foram implementados.
 - **Primeira entrega funcional:** cadastro de cliente e abertura rápida de solicitação; a OS só será criada após triagem e orçamento aprovado quando necessário.
 
 ## Etapas do ciclo de desenvolvimento
@@ -28,7 +28,7 @@ Este roadmap organiza o trabalho pelas etapas 6.1 a 6.10 do Development Manual. 
 
 ## Próxima sequência
 
-1. Fechar autenticação e provisionamento: o admin SaaS cria o acesso inicial do diretor; o diretor conclui a configuração e cria os acessos internos. Decidir quando é criado o registro da prestadora e validar a matriz de permissões proposta.
+1. Implementar autenticação e provisionamento sobre o esquema inicial, incluindo configuração da prestadora e acesso do diretor.
 2. Detalhar estados da solicitação e da OS, incluindo arquivamento após recusa e criação de cópia independente.
 3. Revisar o modelo lógico para refletir solicitação e OS separadas e confirmar o isolamento multiempresa.
 4. Preparar tarefas para cadastro de cliente, solicitação, triagem, conversão e cópia de solicitação arquivada, usando os critérios existentes.

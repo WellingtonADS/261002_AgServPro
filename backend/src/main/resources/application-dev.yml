@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/agservpro}
+    username: ${DB_USERNAME:agservpro}
+    password: ${DB_PASSWORD:agservpro}

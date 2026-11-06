@@ -1,6 +1,6 @@
 # Arquitetura e decisões técnicas
 
-**Status geral:** SaaS multiempresa e stack aprovados; autenticação, deploy e mecanismos finais de isolamento ainda pendentes.
+**Status geral:** SaaS multiempresa, provisionamento pelo Administrador SaaS, acesso por e-mail/senha, PostgreSQL com RLS e stack aprovados. Sessão de autenticação, matriz completa de permissões, deploy e isolamento das tabelas operacionais ainda precisam ser concluídos.
 
 ## Proposta atual
 
@@ -15,8 +15,8 @@
 
 ## Decisões pendentes
 
-1. Forma de autenticação e entrega segura do acesso inicial; decidir se o registro preliminar da prestadora é criado pelo admin SaaS ou pelo diretor durante a configuração; validar a matriz de permissões por perfil.
-2. Como aplicar e validar o isolamento por prestadora no banco e na aplicação.
+1. Estratégia de sessão e entrega da URL de convite; validar a matriz completa de permissões por perfil.
+2. Aplicar e validar o isolamento por prestadora nas tabelas operacionais, com contexto transacional no backend.
 3. Expiração, revogação e proteção do link do cliente.
 4. Armazenamento, limites e retenção de fotos/anexos.
 5. Quantidade de técnicos cadastráveis no MVP; conflito se aplica ao técnico atribuído.
@@ -29,7 +29,8 @@
 - Solicitação e OS são registros distintos. A OS só é criada após a triagem e, quando o orçamento for necessário, após sua aprovação. Decisão confirmada pelo responsável em 2026-11-06.
 - Quando o cliente recusa o orçamento, a solicitação é arquivada sem gerar OS. Ela pode ser usada como modelo para criar uma solicitação nova, sem alterar a original.
 - O administrador do sistema SaaS provisiona o acesso inicial do diretor; o diretor conclui a configuração da prestadora e cria os acessos de gerência e colaborador. Decisão confirmada pelo responsável em 2026-11-06.
-- A decisão foi confirmada pelo responsável em 2026-10-08. A tecnologia usada para impor esse isolamento permanece pendente.
+- A autenticação usará e-mail e senha; convites terão token de uso único armazenado como hash e expiração. O PostgreSQL aplicará RLS às tabelas com escopo de prestadora, com contexto definido pelo backend. Acesso global do Administrador SaaS será auditado. Decisão confirmada pelo responsável em 2026-11-06.
+- A decisão de SaaS multiempresa foi confirmada pelo responsável em 2026-10-08; a implementação de RLS começa pela base de acesso e será estendida às tabelas operacionais.
 - Stack aprovada pelo responsável em 2026-10-08: Java 21 + Spring Boot; API REST/JSON documentada com OpenAPI; PostgreSQL + Flyway; Vue 3 + TypeScript + Vite + Vue Router; PrimeVue com tema personalizado. O protótipo HTML continua em validação e será referência visual após aprovação.
 
 ## Arquitetura aprovada para o MVP
@@ -43,7 +44,7 @@
 | Componentes visuais | PrimeVue com tema personalizado | Acelera formulários, calendário, tabelas e diálogos, permitindo aproximar cores e estados do protótipo aprovado. |
 | Design | Usar o protótipo HTML em validação como referência visual após aprovação | Preserva o fluxo validado; definir tokens e componentes compartilhados durante a implementação. Figma fica opcional. |
 
-Para o isolamento multiempresa, cada dado operacional terá `prestadora_id`. O backend obterá a prestadora a partir da identidade autenticada e aplicará esse escopo em todas as operações. O identificador enviado pelo navegador não será suficiente para conceder acesso.
+Para o isolamento multiempresa, cada dado operacional terá `prestadora_id`. O backend obterá a prestadora a partir da identidade autenticada, aplicará esse escopo em todas as operações e definirá o contexto transacional lido pelas políticas RLS. O identificador enviado pelo navegador não será suficiente para conceder acesso.
 
 **Ordem da primeira entrega:** autenticação e vínculo usuário–prestadora; cadastro de cliente; abertura de solicitação rápida. A parte funcional segue TA-01, TA-03, TA-04 e TA-15. O layout final será aplicado após a aprovação do protótipo.
 
@@ -57,7 +58,7 @@ O primeiro fluxo técnico pode ser preparado sem depender da aprovação visual:
 
 Critérios já definidos para esse incremento: TA-01, TA-03, TA-04 e TA-15 em `requirements.md`; RN-01 e RN-02 em `business-rules.md`. Assim, não é necessário criar outra especificação para esse fluxo.
 
-Antes de implementar autenticação e autorização, definir a forma segura de provisionar o acesso inicial do diretor, a conclusão da configuração da prestadora e a concessão de acessos de gerência e colaborador. A camada visual do fluxo será ajustada ao protótipo depois da aprovação.
+O incremento atual cria a base de persistência para identidade, prestadora, vínculo, convite, auditoria e RLS. As rotas de autenticação e provisionamento serão implementadas sobre essa base; a camada visual será ajustada ao protótipo depois da aprovação.
 
 ## Modelo de dados
 

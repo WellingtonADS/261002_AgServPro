@@ -77,6 +77,14 @@ Os documentos canônicos do projeto ficam em `docs/`.
 
 ## Instalação e execução
 
+Inicie o PostgreSQL local pela raiz do repositório:
+
+```bash
+docker compose up -d
+```
+
+Na primeira inicialização, o Flyway cria o esquema de acesso e as políticas de isolamento. As credenciais padrão do Compose servem apenas para desenvolvimento local; em outros ambientes, configure `DB_URL`, `DB_USERNAME` e `DB_PASSWORD` com valores próprios.
+
 Em um terminal, inicie a API:
 
 ```bash
