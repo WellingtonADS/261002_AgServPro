@@ -14,7 +14,8 @@ Este documento detalha o modelo conceitual citado em [architecture.md](../archit
 - Cada solicitação pode originar no máximo uma OS. O orçamento inicial pertence à solicitação; orçamentos adicionais permanecem associados à solicitação e à OS já criada.
 - Uma OS pode ter vários agendamentos e registros de execução, permitindo reagendamento e visitas de retorno com histórico.
 - Cada registro operacional pertence a uma prestadora. O backend obtém o escopo a partir da identidade autenticada, nunca de um `prestadora_id` aceito do navegador.
-- Usuários e prestadoras são entidades separadas; a associação ocorre por `prestadora_usuario`.
+- Usuários e prestadoras são entidades separadas; a associação ocorre por `prestadora_usuario`. O administrador SaaS tem papel de plataforma; diretor, gerência e colaborador são papéis internos da prestadora.
+- O administrador SaaS provisiona o primeiro acesso do diretor; o diretor conclui a configuração da prestadora. Quem cria os acessos de gerência e colaborador ainda precisa ser definido.
 
 ## Diagrama
 
@@ -57,8 +58,8 @@ Tipos indicados são PostgreSQL. IDs usam `uuid`; datas e horários usam `timest
 | Tabela | Campos principais | Regras e vínculos |
 |---|---|---|
 | `prestadora` | `id`, `nome`, `status`, `fuso_horario`, `criado_em`, `atualizado_em` | Raiz de propriedade dos dados operacionais. |
-| `usuario` | `id`, `nome`, `email`, `status`, `criado_em` | Identidade de acesso. Unicidade e normalização de e-mail dependem da decisão de autenticação. |
-| `prestadora_usuario` | `prestadora_id`, `usuario_id`, `papel`, `status`, `criado_em` | Associação do usuário à prestadora; chave única `(prestadora_id, usuario_id)`. Papéis iniciais candidatos: gestor e técnico. |
+| `usuario` | `id`, `nome`, `email`, `status`, `papel_plataforma`, `criado_em` | Identidade de acesso. `papel_plataforma` é nulo para usuários comuns e identifica o administrador SaaS; diretor, gerência e colaborador são papéis na associação à prestadora. Unicidade e normalização de e-mail dependem da decisão de autenticação. |
+| `prestadora_usuario` | `prestadora_id`, `usuario_id`, `papel`, `status`, `criado_em` | Associação do usuário à prestadora; chave única `(prestadora_id, usuario_id)`. Papéis definidos: diretor, gerência e colaborador. Permissões por papel ainda pendentes. |
 | `cliente` | `id`, `prestadora_id`, `nome`, `observacoes`, `criado_em`, `atualizado_em` | Cadastro do cliente dentro da prestadora. |
 | `cliente_contato` | `id`, `prestadora_id`, `cliente_id`, `nome`, `telefone`, `email`, `principal` | Um cliente pode ter mais de um contato. Telefone não deve ser chave única sem regra aprovada. |
 | `local_atendimento` | `id`, `prestadora_id`, `cliente_id`, `apelido`, `cep`, `logradouro`, `numero`, `complemento`, `bairro`, `cidade`, `uf`, `referencia` | Endereço pertencente ao cliente; pode faltar na abertura rápida. |
@@ -121,7 +122,7 @@ Recomenda-se usar colunas textuais com validação controlada por aplicação e 
 
 ## Pontos a confirmar antes das migrations
 
-1. Fechar o fluxo de criação da prestadora, autenticação e convite de técnicos.
+1. Definir autenticação, forma segura de provisionar o primeiro diretor e quem cria acessos de gerência e colaborador.
 2. Aprovar o modelo PostgreSQL compartilhado com escopo por prestadora e definir se haverá proteção adicional por RLS.
 3. Definir se um usuário pode participar de mais de uma prestadora e se e-mail é único globalmente.
 4. Definir a numeração visível de OS e orçamentos por prestadora.
