@@ -71,8 +71,9 @@ A forma de autenticação ainda não foi escolhida. Portanto, os códigos de aut
 | `POST /api/v1/service-requests/{requestId}/triage` | Registrar resultado da triagem e indicar se orçamento é necessário |
 | `GET/POST /api/v1/service-requests/{requestId}/budgets` | Consultar ou criar orçamento da solicitação |
 | `POST /api/v1/service-requests/{requestId}/conversion` | Converter em OS quando a triagem e as aprovações necessárias permitirem |
+| `POST /api/v1/service-requests/{requestId}/copies` | Criar nova solicitação a partir de uma solicitação arquivada |
 
-A solicitação e a OS são recursos separados. A solicitação é criada primeiro e passa pela triagem; se houver orçamento necessário, a conversão em OS só ocorre após sua aprovação. Quando a triagem indicar que não é necessário orçamento, a solicitação pode ser convertida após a triagem. Não há endpoint de criação direta de OS na primeira etapa.
+A solicitação e a OS são recursos separados. A solicitação é criada primeiro e passa pela triagem; se houver orçamento necessário, a conversão em OS só ocorre após sua aprovação. Quando a triagem indicar que não é necessário orçamento, a solicitação pode ser convertida após a triagem. Não há endpoint de criação direta de OS na primeira etapa. A recusa do orçamento arquiva a solicitação sem criar OS.
 
 A solicitação usa cliente já cadastrado. No fluxo rápido do WhatsApp, a interface pode cadastrar o cliente e depois registrar a solicitação. O cliente e a solicitação podem não ter endereço ou equipamento no início; isso não cria nem libera uma OS.
 
@@ -94,7 +95,7 @@ Content-Type: application/json
 }
 ```
 
-O backend define o estado inicial e o escopo da prestadora; não aceita `status` ou `providerId` do corpo. A criação retorna uma solicitação, nunca uma OS. A operação de conversão deve verificar no backend a triagem concluída e a aprovação do orçamento quando exigido.
+O backend define o estado inicial e o escopo da prestadora; não aceita `status` ou `providerId` do corpo. A criação retorna uma solicitação, nunca uma OS. A operação de conversão deve verificar no backend a triagem concluída e a aprovação do orçamento quando exigido. A rota de cópia só aceita solicitação arquivada e cria um novo recurso com estado `RECEBIDA`; a solicitação original permanece intacta. A cópia não leva orçamento, decisões, OS, agendamentos ou execuções.
 
 ### Cadastro completo do cliente
 
@@ -136,10 +137,11 @@ O formato do corpo de erro deve ser padronizado antes da implementação dos end
 ## Decisões para fechar antes do contrato OpenAPI da primeira fatia
 
 1. Confirmar nomes em inglês para rotas e JSON.
-2. A separação solicitação/OS está definida: fechar payloads, estados e operação de conversão.
+2. A separação solicitação/OS e o arquivamento após recusa estão definidos; fechar payloads, estados e operação de cópia/conversão.
 3. Fechar autenticação, vínculo usuário–prestadora e regra de isolamento.
 4. Definir campos obrigatórios e estado inicial da solicitação incompleta.
-5. Definir o formato comum de paginação e erro.
+5. Definir quais campos são preenchidos por padrão pela rota de cópia.
+6. Definir o formato comum de paginação e erro.
 
 ## Manutenção
 
