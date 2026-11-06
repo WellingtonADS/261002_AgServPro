@@ -16,6 +16,8 @@ Permitir que o prestador acompanhe o atendimento desde a solicitação, passando
 
 ## Escopo do MVP
 
+- O administrador SaaS provisiona o acesso inicial do diretor; o diretor conclui a configuração da prestadora. Perfis internos: diretor, gerência e colaborador.
+
 - Cadastro de clientes, contatos e locais de atendimento.
 - Cadastro simples de equipamentos.
 - Cadastro rápido de solicitações recebidas pelo WhatsApp, mesmo com dados pendentes.
