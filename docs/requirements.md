@@ -50,7 +50,7 @@
 | TA-19 | Criar OS vinculada à solicitação somente após triagem concluída e, quando necessário, aprovação do orçamento; permitir conversão sem orçamento quando a triagem indicar que ele não é necessário. |
 | TA-20 | Ao recusar orçamento, arquivar a solicitação sem criar OS. Permitir abrir uma cópia completa e editável do conteúdo, incluindo itens do orçamento como novo rascunho. Ao salvar, criar solicitação com novo ID e estado Recebida, sem herdar aprovação/recusa, OS, agendamentos, execução, links ou eventos; preservar o registro original. |
 | TA-21 | O administrador SaaS provisiona o acesso inicial de um usuário com perfil Diretor para a prestadora. |
-| TA-22 | O diretor acessa esse usuário e conclui a configuração inicial da prestadora. |
+| TA-22 | O diretor acessa o sistema com a conta provisionada e conclui a configuração inicial da prestadora. |
 
 ## Observações
 
