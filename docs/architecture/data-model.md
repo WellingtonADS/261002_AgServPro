@@ -58,7 +58,7 @@ Tipos indicados são PostgreSQL. IDs usam `uuid`; datas e horários usam `timest
 | Tabela | Campos principais | Regras e vínculos |
 |---|---|---|
 | `prestadora` | `id`, `nome`, `status`, `fuso_horario`, `criado_em`, `atualizado_em` | Raiz de propriedade dos dados operacionais. |
-| `usuario` | `id`, `nome`, `email`, `status`, `papel_plataforma`, `criado_em` | Identidade de acesso. `papel_plataforma` é nulo para usuários comuns e identifica o administrador SaaS; diretor, gerência e colaborador são papéis na associação à prestadora. Unicidade e normalização de e-mail dependem da decisão de autenticação. |
+| `usuario` | `id`, `nome`, `email`, `senha_hash`, `status`, `papel_plataforma`, `criado_em` | Identidade de acesso. `papel_plataforma` é nulo para usuários comuns e identifica o administrador SaaS; diretor, gerência e colaborador são papéis na associação à prestadora. E-mail é único sem diferenciar maiúsculas/minúsculas. |
 | `prestadora_usuario` | `prestadora_id`, `usuario_id`, `papel`, `status`, `criado_em` | Associação do usuário à prestadora; chave única `(prestadora_id, usuario_id)`. Papéis definidos: diretor, gerência e colaborador. Permissões por papel ainda pendentes. |
 | `cliente` | `id`, `prestadora_id`, `nome`, `observacoes`, `criado_em`, `atualizado_em` | Cadastro do cliente dentro da prestadora. |
 | `cliente_contato` | `id`, `prestadora_id`, `cliente_id`, `nome`, `telefone`, `email`, `principal` | Um cliente pode ter mais de um contato. Telefone não deve ser chave única sem regra aprovada. |
@@ -125,19 +125,18 @@ Recomenda-se usar colunas textuais com validação controlada por aplicação e 
 - Identidade usa e-mail único global e senha armazenada como hash; o papel de plataforma é distinto dos papéis em `prestadora_usuario`.
 - O Administrador SaaS provisiona uma prestadora em `PENDENTE_CONFIGURACAO` e o vínculo inicial `DIRETOR`.
 - Convites guardam somente hash do token, com expiração, aceite e revogação.
-- `prestadora`, `prestadora_usuario`, `convite_acesso` e `auditoria_saas` usam RLS. O contexto é definido pelo backend na transação com `app.prestadora_id` ou `app.admin_saas`.
+- `prestadora`, `prestadora_usuario`, `convite_acesso` e `auditoria_saas` usam RLS. O contexto é definido pelo backend na transação com `app.usuario_id`, `app.prestadora_id` ou `app.admin_saas`; políticas de prestadora confirmam o vínculo ativo do usuário.
 - O usuário de banco da aplicação não pode ser superusuário nem receber `BYPASSRLS`; em produção, credenciais de migração e de execução devem ser separadas antes do deploy.
 - A migration ainda não cria as tabelas operacionais de clientes, solicitações ou OS; elas dependem da revisão do modelo e serão acrescentadas nas migrations seguintes.
 
 ## Pontos a confirmar antes das próximas migrations
 
 1. Validar a matriz de permissões dos perfis.
-2. Definir a estratégia de sessão e a entrega da URL de convite.
-3. Definir se um usuário pode participar de mais de uma prestadora; o esquema atual permite múltiplos vínculos.
-4. Definir a numeração visível de OS e orçamentos por prestadora.
-5. Definir proteção, expiração, revogação e conteúdo autorizado pelo link do cliente.
-6. Definir dados mínimos da conclusão e limites/retenção de anexos.
-7. Confirmar a regra de duração e a constraint final de conflito de agenda.
+2. Definir se um usuário pode participar de mais de uma prestadora; o esquema atual permite múltiplos vínculos.
+3. Definir a numeração visível de OS e orçamentos por prestadora.
+4. Definir proteção, expiração, revogação e conteúdo autorizado pelo link do cliente.
+5. Definir dados mínimos da conclusão e limites/retenção de anexos.
+6. Confirmar a regra de duração e a constraint final de conflito de agenda.
 
 ## Fora deste modelo inicial
 

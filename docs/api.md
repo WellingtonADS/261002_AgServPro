@@ -2,13 +2,19 @@
 
 ## Estado atual
 
-A API usa REST/JSON e o prefixo versionado `/api/v1`. O único endpoint implementado hoje é `GET /api/v1/health`; os demais caminhos abaixo são propostas para o MVP, ainda não implementadas.
+A API usa REST/JSON e o prefixo versionado `/api/v1`. Estão implementados saúde, sessão por e-mail e senha, aceite de convite, provisionamento do diretor pelo Administrador SaaS e configuração inicial da prestadora.
 
 O contrato OpenAPI dos endpoints existentes fica em [`backend/openapi.yaml`](../backend/openapi.yaml). As rotas planejadas só devem entrar no OpenAPI quando seu contrato for aprovado.
 
 ## Executar localmente
 
-Com Java 21 e Maven instalados, inicie a API a partir da raiz do repositório:
+Com Docker, Java 21 e Maven instalados, inicie o PostgreSQL pela raiz do repositório:
+
+```bash
+docker compose up -d
+```
+
+Configure `ADMIN_SAAS_EMAIL` e `ADMIN_SAAS_PASSWORD` para criar o primeiro Administrador SaaS. Depois, inicie a API:
 
 ```bash
 mvn -f backend/pom.xml spring-boot:run
@@ -54,7 +60,21 @@ O valor `UP` é retornado pelo controller. Este endpoint confirma que a aplicaç
 - Endpoints de negócio serão autenticados. O backend obterá a prestadora do usuário autenticado, sem aceitar `providerId` do corpo ou da URL.
 - Quando um recurso existir em outra prestadora, responder como não encontrado (`404`) para não revelar sua existência.
 
-A forma de autenticação ainda não foi escolhida. Portanto, os códigos de autenticação estão previstos, mas os endpoints de login e sessão ficam para depois dessa decisão.
+## Acesso e primeiro provisionamento
+
+O login usa sessão no cookie `AGSERVPRO_SESSION` (HttpOnly). Chamadas de escrita exigem o token CSRF obtido em `GET /api/v1/auth/csrf`, enviado no header `X-XSRF-TOKEN`. O Administrador SaaS inicial é criado no primeiro início quando `ADMIN_SAAS_EMAIL` e `ADMIN_SAAS_PASSWORD` estão configurados; a senha deve ter pelo menos 12 caracteres.
+
+| Método e rota | Uso |
+|---|---|
+| `GET /api/v1/auth/csrf` | Obter token CSRF para chamadas de escrita |
+| `POST /api/v1/auth/session` | Entrar com e-mail e senha |
+| `DELETE /api/v1/auth/session` | Encerrar sessão |
+| `GET /api/v1/auth/me` | Consultar identidade e vínculos com prestadoras |
+| `POST /api/v1/admin/prestadoras` | Administrador SaaS cria prestadora pendente e provisiona diretor |
+| `POST /api/v1/auth/invitations/accept` | Diretor define senha e aceita convite de uso único; retorna `204` |
+| `PUT /api/v1/prestadoras/{prestadoraId}/configuracao` | Diretor conclui nome e fuso horário da prestadora |
+
+A URL do convite é devolvida somente na resposta de provisionamento e expira em 24 horas. O banco armazena somente o hash do token. O diretor aceita o convite na tela `/convite`; não há envio automático de e-mail.
 
 ## Primeira fatia: clientes e solicitações
 
@@ -138,7 +158,7 @@ O formato do corpo de erro deve ser padronizado antes da implementação dos end
 
 1. Confirmar nomes em inglês para rotas e JSON.
 2. A separação solicitação/OS, o arquivamento após recusa e o comportamento da cópia total estão definidos; fechar payloads e estados da conversão.
-3. Fechar autenticação, vínculo usuário–prestadora, provisionamento inicial do diretor, matriz de permissões e regra de isolamento. O diretor cria os acessos de gerência e colaborador.
+3. Validar a matriz completa de permissões e implementar gestão de acessos de gerência e colaborador.
 4. Definir campos obrigatórios e estado inicial da solicitação incompleta.
 6. Definir o formato comum de paginação e erro.
 

@@ -86,23 +86,86 @@ AS $$
     SELECT NULLIF(current_setting('app.prestadora_id', true), '')::uuid
 $$;
 
+CREATE FUNCTION agservpro_context_usuario()
+RETURNS uuid
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT NULLIF(current_setting('app.usuario_id', true), '')::uuid
+$$;
+
+CREATE FUNCTION agservpro_context_convite()
+RETURNS text
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT NULLIF(current_setting('app.convite_token_hash', true), '')
+$$;
+
 ALTER TABLE prestadora ENABLE ROW LEVEL SECURITY;
 ALTER TABLE prestadora FORCE ROW LEVEL SECURITY;
 CREATE POLICY prestadora_scope ON prestadora
-    USING (agservpro_context_admin() OR id = agservpro_context_prestadora())
-    WITH CHECK (agservpro_context_admin() OR id = agservpro_context_prestadora());
+    USING (
+        agservpro_context_admin()
+        OR id = agservpro_context_prestadora()
+        OR EXISTS (
+            SELECT 1
+            FROM prestadora_usuario pu
+            WHERE pu.prestadora_id = prestadora.id
+              AND pu.usuario_id = agservpro_context_usuario()
+              AND pu.status = 'ATIVO'
+        )
+    )
+    WITH CHECK (
+        agservpro_context_admin()
+        OR (
+            id = agservpro_context_prestadora()
+            AND EXISTS (
+                SELECT 1
+                FROM prestadora_usuario pu
+                WHERE pu.prestadora_id = prestadora.id
+                  AND pu.usuario_id = agservpro_context_usuario()
+                  AND pu.status = 'ATIVO'
+            )
+        )
+    );
 
 ALTER TABLE prestadora_usuario ENABLE ROW LEVEL SECURITY;
 ALTER TABLE prestadora_usuario FORCE ROW LEVEL SECURITY;
 CREATE POLICY prestadora_usuario_scope ON prestadora_usuario
-    USING (agservpro_context_admin() OR prestadora_id = agservpro_context_prestadora())
-    WITH CHECK (agservpro_context_admin() OR prestadora_id = agservpro_context_prestadora());
+    USING (agservpro_context_admin() OR usuario_id = agservpro_context_usuario())
+    WITH CHECK (agservpro_context_admin());
 
 ALTER TABLE convite_acesso ENABLE ROW LEVEL SECURITY;
 ALTER TABLE convite_acesso FORCE ROW LEVEL SECURITY;
 CREATE POLICY convite_acesso_scope ON convite_acesso
-    USING (agservpro_context_admin() OR prestadora_id = agservpro_context_prestadora())
-    WITH CHECK (agservpro_context_admin() OR prestadora_id = agservpro_context_prestadora());
+    USING (
+        agservpro_context_admin()
+        OR token_hash = agservpro_context_convite()
+        OR (
+            prestadora_id = agservpro_context_prestadora()
+            AND EXISTS (
+                SELECT 1
+                FROM prestadora_usuario pu
+                WHERE pu.prestadora_id = convite_acesso.prestadora_id
+                  AND pu.usuario_id = agservpro_context_usuario()
+                  AND pu.status = 'ATIVO'
+            )
+        )
+    )
+    WITH CHECK (
+        agservpro_context_admin()
+        OR (
+            prestadora_id = agservpro_context_prestadora()
+            AND EXISTS (
+                SELECT 1
+                FROM prestadora_usuario pu
+                WHERE pu.prestadora_id = convite_acesso.prestadora_id
+                  AND pu.usuario_id = agservpro_context_usuario()
+                  AND pu.status = 'ATIVO'
+            )
+        )
+    );
 
 ALTER TABLE auditoria_saas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE auditoria_saas FORCE ROW LEVEL SECURITY;

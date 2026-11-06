@@ -3,3 +3,12 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/agservpro}
     username: ${DB_USERNAME:agservpro}
     password: ${DB_PASSWORD:agservpro}
+
+app:
+  public-url: ${APP_PUBLIC_URL:http://localhost:5173}
+
+server:
+  servlet:
+    session:
+      cookie:
+        secure: ${SESSION_COOKIE_SECURE:false}

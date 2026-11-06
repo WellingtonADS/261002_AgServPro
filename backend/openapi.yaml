@@ -11,7 +11,199 @@ servers:
 tags:
   - name: Health
     description: Disponibilidade da aplicação
+  - name: Auth
+    description: Sessão, identidade e convites
+  - name: Admin
+    description: Operações globais do Administrador SaaS
+  - name: Prestadoras
+    description: Configuração da prestadora
 paths:
+  /api/v1/auth/csrf:
+    get:
+      operationId: getCsrfToken
+      tags: [Auth]
+      summary: Obtém token CSRF para chamadas de escrita
+      responses:
+        '200':
+          description: Token CSRF e cookie de proteção definidos
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [token]
+                properties:
+                  token: { type: string }
+  /api/v1/auth/session:
+    post:
+      operationId: createSession
+      tags: [Auth]
+      summary: Inicia sessão com e-mail e senha
+      description: Exige o token CSRF obtido em GET /api/v1/auth/csrf. A sessão é mantida em cookie HttpOnly.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email, maxLength: 254 }
+                password: { type: string, maxLength: 72 }
+      responses:
+        '200':
+          description: Sessão autenticada
+          headers:
+            Set-Cookie:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id, email]
+                properties:
+                  id: { type: string, format: uuid }
+                  email: { type: string, format: email }
+                  papelPlataforma: { type: string, nullable: true }
+        '401': { description: Credenciais inválidas ou conta inativa }
+    delete:
+      operationId: deleteSession
+      tags: [Auth]
+      summary: Encerra a sessão atual
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      responses:
+        '204':
+          description: Sessão encerrada
+          content: {}
+        '401': { description: Sessão ausente }
+  /api/v1/auth/me:
+    get:
+      operationId: getCurrentUser
+      tags: [Auth]
+      summary: Consulta identidade e vínculos ativos do usuário
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Identidade autenticada e prestadoras vinculadas
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id, email, prestadoras]
+                properties:
+                  id: { type: string, format: uuid }
+                  email: { type: string, format: email }
+                  papelPlataforma: { type: string, nullable: true }
+                  prestadoras:
+                    type: array
+                    items:
+                      type: object
+                      required: [prestadoraId, prestadora, prestadoraStatus, papel, status]
+                      properties:
+                        prestadoraId: { type: string, format: uuid }
+                        prestadora: { type: string }
+                        prestadoraStatus: { type: string }
+                        papel: { type: string }
+                        status: { type: string }
+        '401': { description: Sessão ausente }
+  /api/v1/auth/invitations/accept:
+    post:
+      operationId: acceptInvitation
+      tags: [Auth]
+      summary: Aceita convite e define a senha inicial
+      description: Exige o token CSRF obtido em GET /api/v1/auth/csrf.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, name, password]
+              properties:
+                token: { type: string, maxLength: 128 }
+                name: { type: string, minLength: 1, maxLength: 160 }
+                password: { type: string, minLength: 12, maxLength: 72 }
+      responses:
+        '204':
+          description: Convite aceito; usuário pode iniciar uma sessão
+          content: {}
+        '400': { description: Convite inválido }
+        '410': { description: Convite expirado, utilizado ou revogado }
+  /api/v1/admin/prestadoras:
+    post:
+      operationId: provisionProviderDirector
+      tags: [Admin]
+      summary: Cria uma prestadora pendente e provisiona o acesso do diretor
+      description: Exige sessão do Administrador SaaS e CSRF. A URL de convite contém segredo de uso único; é retornada somente nesta resposta e não deve ser registrada em logs.
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nomePrestadora, nomeDiretor, emailDiretor]
+              properties:
+                nomePrestadora: { type: string, minLength: 1, maxLength: 180 }
+                nomeDiretor: { type: string, minLength: 1, maxLength: 160 }
+                emailDiretor: { type: string, format: email, maxLength: 254 }
+      responses:
+        '201':
+          description: Prestadora criada e acesso inicial provisionado
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [prestadoraId, diretorId, conviteUrl, expiraEm]
+                properties:
+                  prestadoraId: { type: string, format: uuid }
+                  diretorId: { type: string, format: uuid }
+                  conviteUrl: { type: string, format: uri }
+                  expiraEm: { type: string, format: date-time }
+        '403': { description: Usuário não é Administrador SaaS }
+        '409': { description: Já existe uma conta com esse e-mail }
+  /api/v1/prestadoras/{prestadoraId}/configuracao:
+    put:
+      operationId: completeProviderSetup
+      tags: [Prestadoras]
+      summary: Conclui a configuração inicial da prestadora
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      parameters:
+        - name: prestadoraId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nome, fusoHorario]
+              properties:
+                nome: { type: string, minLength: 1, maxLength: 180 }
+                fusoHorario: { type: string, example: America/Manaus }
+      responses:
+        '200':
+          description: Configuração salva e prestadora ativada
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [prestadoraId, nome, fusoHorario, status]
+                properties:
+                  prestadoraId: { type: string, format: uuid }
+                  nome: { type: string }
+                  fusoHorario: { type: string }
+                  status: { type: string, const: ATIVA }
+        '400': { description: Nome ou fuso horário inválido }
+        '403': { description: Usuário não é diretor ativo dessa prestadora }
   /api/v1/health:
     get:
       operationId: getHealth
@@ -33,6 +225,15 @@ paths:
                   value:
                     status: UP
 components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: AGSERVPRO_SESSION
+    csrfHeader:
+      type: apiKey
+      in: header
+      name: X-XSRF-TOKEN
   schemas:
     HealthResponse:
       type: object

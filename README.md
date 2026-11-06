@@ -16,10 +16,10 @@ O AgServPro ajuda profissionais autônomos e pequenas equipes de manutenção a 
 
 - **Produto:** escopo inicial do MVP definido.
 - **Protótipo:** em validação final pelo cliente após ajustes de responsividade.
-- **Arquitetura:** SaaS multiempresa e stack aprovados.
-- **Aplicação:** base técnica iniciada; fluxos de negócio ainda não implementados.
+- **Arquitetura:** SaaS multiempresa, sessão e provisionamento inicial definidos.
+- **Aplicação:** login, provisionamento SaaS, convite do diretor e configuração inicial da prestadora implementados; fluxos operacionais seguem pendentes.
 
-A definição de autenticação, criação de prestadoras e aplicação técnica do isolamento multiempresa continua registrada em [Arquitetura](docs/architecture.md).
+A autenticação, provisionamento e isolamento multiempresa estão descritos em [Arquitetura](docs/architecture.md).
 
 ## Escopo do MVP
 
@@ -83,7 +83,7 @@ Inicie o PostgreSQL local pela raiz do repositório:
 docker compose up -d
 ```
 
-Na primeira inicialização, o Flyway cria o esquema de acesso e as políticas de isolamento. As credenciais padrão do Compose servem apenas para desenvolvimento local; em outros ambientes, configure `DB_URL`, `DB_USERNAME` e `DB_PASSWORD` com valores próprios.
+Na primeira inicialização, o Flyway cria o esquema de acesso e as políticas de isolamento. As credenciais padrão do Compose servem apenas para desenvolvimento local; em outros ambientes, configure `DB_URL`, `DB_USERNAME` e `DB_PASSWORD` com valores próprios. Para criar o Administrador SaaS inicial, configure `ADMIN_SAAS_EMAIL` e `ADMIN_SAAS_PASSWORD` no ambiente da API; use uma senha com pelo menos 12 caracteres. A senha não tem valor padrão.
 
 Em um terminal, inicie a API:
 

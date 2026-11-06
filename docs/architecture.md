@@ -1,6 +1,6 @@
 # Arquitetura e decisões técnicas
 
-**Status geral:** SaaS multiempresa, provisionamento pelo Administrador SaaS, acesso por e-mail/senha, PostgreSQL com RLS e stack aprovados. Sessão de autenticação, matriz completa de permissões, deploy e isolamento das tabelas operacionais ainda precisam ser concluídos.
+**Status geral:** SaaS multiempresa, provisionamento pelo Administrador SaaS, sessão por e-mail/senha, PostgreSQL com RLS e stack aprovados. A primeira camada de acesso está implementada; a matriz completa de permissões, gestão de usuários internos, RLS das tabelas operacionais, deploy e monitoramento ainda precisam ser concluídos.
 
 ## Proposta atual
 
@@ -15,9 +15,9 @@
 
 ## Decisões pendentes
 
-1. Estratégia de sessão e entrega da URL de convite; validar a matriz completa de permissões por perfil.
-2. Aplicar e validar o isolamento por prestadora nas tabelas operacionais, com contexto transacional no backend.
-3. Expiração, revogação e proteção do link do cliente.
+1. Validar a matriz completa de permissões e concluir a gestão de acessos de gerência e colaborador.
+2. Estender e validar o isolamento por prestadora nas tabelas operacionais, com contexto transacional no backend.
+3. Definir expiração, revogação e proteção do link do cliente.
 4. Armazenamento, limites e retenção de fotos/anexos.
 5. Quantidade de técnicos cadastráveis no MVP; conflito se aplica ao técnico atribuído.
 6. Hospedagem e deploy.
@@ -29,7 +29,7 @@
 - Solicitação e OS são registros distintos. A OS só é criada após a triagem e, quando o orçamento for necessário, após sua aprovação. Decisão confirmada pelo responsável em 2026-11-06.
 - Quando o cliente recusa o orçamento, a solicitação é arquivada sem gerar OS. Ela pode ser usada como modelo para criar uma solicitação nova, sem alterar a original.
 - O administrador do sistema SaaS provisiona o acesso inicial do diretor; o diretor conclui a configuração da prestadora e cria os acessos de gerência e colaborador. Decisão confirmada pelo responsável em 2026-11-06.
-- A autenticação usará e-mail e senha; convites terão token de uso único armazenado como hash e expiração. O PostgreSQL aplicará RLS às tabelas com escopo de prestadora, com contexto definido pelo backend. Acesso global do Administrador SaaS será auditado. Decisão confirmada pelo responsável em 2026-11-06.
+- A autenticação usa e-mail e senha em sessão com cookie HttpOnly e proteção CSRF. Convites têm token de uso único armazenado como hash e expiram em 24 horas. O PostgreSQL aplica RLS às tabelas de acesso, com contexto transacional definido pelo backend. O provisionamento global do Administrador SaaS é auditado. Decisão confirmada pelo responsável em 2026-11-06.
 - A decisão de SaaS multiempresa foi confirmada pelo responsável em 2026-10-08; a implementação de RLS começa pela base de acesso e será estendida às tabelas operacionais.
 - Stack aprovada pelo responsável em 2026-10-08: Java 21 + Spring Boot; API REST/JSON documentada com OpenAPI; PostgreSQL + Flyway; Vue 3 + TypeScript + Vite + Vue Router; PrimeVue com tema personalizado. O protótipo HTML continua em validação e será referência visual após aprovação.
 
@@ -48,7 +48,7 @@ Para o isolamento multiempresa, cada dado operacional terá `prestadora_id`. O b
 
 **Ordem da primeira entrega:** autenticação e vínculo usuário–prestadora; cadastro de cliente; abertura de solicitação rápida. A parte funcional segue TA-01, TA-03, TA-04 e TA-15. O layout final será aplicado após a aprovação do protótipo.
 
-Hospedagem, domínio e estratégia final de sessão ainda precisam ser definidos antes do deploy. Esta stack foi aprovada em 2026-10-08.
+Hospedagem e domínio ainda precisam ser definidos antes do deploy. Esta stack foi aprovada em 2026-10-08.
 
 Referências: [Spring Boot](https://spring.io/projects/spring-boot), [Vue com TypeScript](https://vuejs.org/guide/typescript/overview), [Vite](https://vite.dev/guide/), [PrimeVue](https://primevue.dev/components/), [OpenAPI](https://www.openapis.org/).
 
@@ -58,11 +58,11 @@ O primeiro fluxo técnico pode ser preparado sem depender da aprovação visual:
 
 Critérios já definidos para esse incremento: TA-01, TA-03, TA-04 e TA-15 em `requirements.md`; RN-01 e RN-02 em `business-rules.md`. Assim, não é necessário criar outra especificação para esse fluxo.
 
-O incremento atual cria a base de persistência para identidade, prestadora, vínculo, convite, auditoria e RLS. As rotas de autenticação e provisionamento serão implementadas sobre essa base; a camada visual será ajustada ao protótipo depois da aprovação.
+O primeiro incremento de acesso cria a base e implementa sessão, provisionamento do diretor, aceite de convite e configuração inicial da prestadora. A gestão de acessos internos continua pendente; a camada visual será ajustada ao protótipo após aprovação.
 
 ## Modelo de dados
 
-A proposta lógica de entidades, vínculos, integridade, índices e pendências está em [Modelo lógico de dados](architecture/data-model.md). Ela ainda precisa ser revisada antes de criar tabelas ou migrations, especialmente quanto ao modelo de isolamento multiempresa, autenticação e estados da OS.
+A proposta lógica de entidades, vínculos, integridade, índices e pendências está em [Modelo lógico de dados](architecture/data-model.md). A migration inicial implementa as tabelas de acesso; as tabelas operacionais ainda precisam de revisão antes de serem criadas.
 
 ## Camadas de negócio e organização do backend (proposta)
 
@@ -79,4 +79,4 @@ O fluxo esperado é: endpoint → caso de uso → regras do domínio → persist
 
 Os módulos devem acompanhar as funcionalidades necessárias, por exemplo `clientes` e `solicitacoes` no primeiro incremento. Outras áreas, como agenda, orçamento e execução de OS, entram quando forem implementadas. Cada módulo mantém seus componentes próximos; código compartilhado só deve ser extraído quando houver reutilização real.
 
-O escopo da prestadora continua sendo obtido no backend a partir da identidade autenticada, conforme a decisão acima. O mecanismo concreto de autenticação e isolamento segue pendente. O backend atual contém apenas a aplicação Spring Boot e o endpoint de saúde; estas camadas são uma proposta, não uma descrição do código existente.
+O escopo da prestadora é verificado no backend a partir da identidade autenticada. O mecanismo de sessão e RLS está implementado para as tabelas de acesso; estas camadas serão estendidas às tabelas operacionais à medida que os módulos forem criados.
