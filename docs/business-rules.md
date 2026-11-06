@@ -19,7 +19,18 @@
 ## Acesso e configuração da prestadora
 
 - **RN-16 — Acesso inicial:** o administrador do sistema SaaS provisiona o acesso inicial do diretor. O diretor conclui a configuração da prestadora.
-- **RN-17 — Papéis:** o perfil administrador SaaS é da plataforma; diretor, gerência e colaborador são perfis no âmbito de uma prestadora. As permissões associadas e quem cria os acessos de gerência/colaborador ainda serão definidos.
+- **RN-17 — Papéis:** administrador SaaS é um perfil da plataforma; diretor, gerência e colaborador são perfis de uma prestadora. O diretor cria os acessos de gerência e colaborador. As permissões detalhadas estão em proposta para validação.
+
+## Proposta de permissões por perfil (validar)
+
+| Perfil | Acesso proposto | Limites propostos |
+|---|---|---|
+| Administrador SaaS | Controle global da plataforma: prestadoras, diretores, usuários, configurações e registros operacionais de qualquer prestadora. | Toda consulta ou alteração de dados de uma prestadora gera registro de auditoria. Não é um papel dentro da prestadora. |
+| Diretor | Controle completo da própria prestadora: configurações, dados e operações; cria, altera, desativa e atribui perfil a usuários de gerência e colaboradores. | Não pode conceder perfil de administrador SaaS nem acessar outra prestadora. |
+| Gerência | Operação diária de toda a prestadora: clientes, equipamentos, solicitações, triagem, orçamentos, agenda, OS, atribuição de colaboradores e relatórios. | Não administra usuários, papéis, configuração ou estado da prestadora. |
+| Colaborador | Consulta OS e dados necessários do cliente quando atribuídos; registra execução, diagnóstico, materiais, fotos e andamento. | Sem gestão de usuários, orçamento, configuração ou agenda geral; não acessa OS não atribuídas. |
+
+Para o MVP, os quatro perfis seriam fixos, sem editor de papéis personalizados. A matriz é uma proposta baseada em padrões de papéis separados por escopo; precisa ser confirmada antes da implementação de autorização.
 
 ## Agenda
 
