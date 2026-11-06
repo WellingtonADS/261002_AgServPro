@@ -8,14 +8,14 @@
 - SaaS para várias prestadoras, com isolamento dos dados por prestadora desde a primeira versão.
 - Monólito modular para manter simples o desenvolvimento e a operação inicial.
 - Banco relacional PostgreSQL com migrations versionadas por Flyway.
-- Perfis propostos: proprietário/gestor e técnico.
+- Perfis na plataforma: administrador SaaS. Perfis dentro de cada prestadora: diretor, gerência e colaborador. As permissões detalhadas ainda precisam ser definidas.
 - Cliente final sem conta; consulta e resposta ao orçamento por link.
 - Operação online no MVP; modo offline não foi aprovado.
 - Fotos e anexos vinculados à OS, em armazenamento separado do banco.
 
 ## Decisões pendentes
 
-1. Fluxo de criação da prestadora, autenticação e convite de técnicos.
+1. Forma de autenticação e entrega segura do acesso inicial; definir também quem cria acessos de gerência e colaborador e quais permissões cada perfil terá.
 2. Como aplicar e validar o isolamento por prestadora no banco e na aplicação.
 3. Expiração, revogação e proteção do link do cliente.
 4. Armazenamento, limites e retenção de fotos/anexos.
@@ -28,6 +28,7 @@
 - O produto será SaaS multiempresa desde o MVP. Os registros operacionais devem pertencer a uma prestadora, e o acesso de uma prestadora não pode expor dados de outra.
 - Solicitação e OS são registros distintos. A OS só é criada após a triagem e, quando o orçamento for necessário, após sua aprovação. Decisão confirmada pelo responsável em 2026-11-06.
 - Quando o cliente recusa o orçamento, a solicitação é arquivada sem gerar OS. Ela pode ser usada como modelo para criar uma solicitação nova, sem alterar a original.
+- O administrador do sistema SaaS provisiona o acesso inicial do diretor; o diretor conclui a configuração da prestadora. Decisão confirmada pelo responsável em 2026-11-06.
 - A decisão foi confirmada pelo responsável em 2026-10-08. A tecnologia usada para impor esse isolamento permanece pendente.
 - Stack aprovada pelo responsável em 2026-10-08: Java 21 + Spring Boot; API REST/JSON documentada com OpenAPI; PostgreSQL + Flyway; Vue 3 + TypeScript + Vite + Vue Router; PrimeVue com tema personalizado. O protótipo HTML continua em validação e será referência visual após aprovação.
 
@@ -56,7 +57,7 @@ O primeiro fluxo técnico pode ser preparado sem depender da aprovação visual:
 
 Critérios já definidos para esse incremento: TA-01, TA-03, TA-04 e TA-15 em `requirements.md`; RN-01 e RN-02 em `business-rules.md`. Assim, não é necessário criar outra especificação para esse fluxo.
 
-Antes de implementar autenticação e autorização, definir o fluxo de criação da prestadora e convite de técnicos. A camada visual do fluxo será ajustada ao protótipo depois da aprovação.
+Antes de implementar autenticação e autorização, definir a forma segura de provisionar o acesso inicial do diretor, a conclusão da configuração da prestadora e a concessão de acessos de gerência e colaborador. A camada visual do fluxo será ajustada ao protótipo depois da aprovação.
 
 ## Modelo de dados
 
