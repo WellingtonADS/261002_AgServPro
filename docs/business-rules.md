@@ -25,12 +25,12 @@
 
 | Perfil | Acesso proposto | Limites propostos |
 |---|---|---|
-| Administrador SaaS | Controle global da plataforma: prestadoras, diretores, usuários, configurações e registros operacionais de qualquer prestadora. | Toda consulta ou alteração de dados de uma prestadora gera registro de auditoria. Não é um papel dentro da prestadora. |
+| Administrador SaaS | Controle total do sistema: administra a plataforma, todas as prestadoras, diretores, usuários e operações, com acesso global. | Ações administrativas e acesso transversal a dados ficam auditados. É um papel da plataforma, não de uma prestadora. |
 | Diretor | Controle completo da própria prestadora: configurações, dados e operações; cria, altera, desativa e atribui perfil a usuários de gerência e colaboradores. | Não pode conceder perfil de administrador SaaS nem acessar outra prestadora. |
 | Gerência | Operação diária de toda a prestadora: clientes, equipamentos, solicitações, triagem, orçamentos, agenda, OS, atribuição de colaboradores e relatórios. | Não administra usuários, papéis, configuração ou estado da prestadora. |
-| Colaborador | Consulta OS e dados necessários do cliente quando atribuídos; registra execução, diagnóstico, materiais, fotos e andamento. | Sem gestão de usuários, orçamento, configuração ou agenda geral; não acessa OS não atribuídas. |
+| Colaborador (técnico) | Consulta agenda e OS atribuídas, além dos dados do cliente/equipamento necessários; registra diagnóstico, serviço realizado, materiais, fotos, observações, andamento e resultado. Pode registrar a conclusão do atendimento conforme os campos obrigatórios. | Não gerencia usuários, orçamentos, configuração, agenda geral ou OS não atribuídas; não altera atribuição de técnico. |
 
-Para o MVP, os quatro perfis seriam fixos, sem editor de papéis personalizados. A matriz é uma proposta baseada em padrões de papéis separados por escopo; precisa ser confirmada antes da implementação de autorização.
+Para o MVP, os quatro perfis são fixos, sem editor de papéis personalizados. O administrador SaaS tem escopo global; diretor e gerência têm escopo da prestadora; colaborador tem escopo das OS atribuídas. A matriz detalhada permanece como proposta para validação antes da implementação de autorização.
 
 ## Agenda
 
