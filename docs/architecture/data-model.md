@@ -9,7 +9,7 @@ Este documento detalha o modelo conceitual citado em [architecture.md](../archit
 ## Premissas do modelo
 
 - **Decisão confirmada pelo responsável:** solicitação e OS são registros distintos. A OS é criada depois da triagem e, quando necessária, da aprovação do orçamento.
-- Orçamento recusado arquiva a solicitação sem criar OS. Uma solicitação arquivada pode gerar uma cópia independente, com novo identificador e sem copiar aprovações ou dados de OS.
+- Orçamento recusado arquiva a solicitação sem criar OS. A cópia total reutiliza conteúdo editável (inclusive triagem e itens de orçamento), mas cria novos registros e não replica estados de decisão nem histórico operacional.
 - A solicitação pode ficar incompleta, sem local ou equipamento, conforme RN-01. Cliente, relato e origem bastam para registrá-la.
 - Cada solicitação pode originar no máximo uma OS. O orçamento inicial pertence à solicitação; orçamentos adicionais permanecem associados à solicitação e à OS já criada.
 - Uma OS pode ter vários agendamentos e registros de execução, permitindo reagendamento e visitas de retorno com histórico.
@@ -63,10 +63,10 @@ Tipos indicados são PostgreSQL. IDs usam `uuid`; datas e horários usam `timest
 | `cliente_contato` | `id`, `prestadora_id`, `cliente_id`, `nome`, `telefone`, `email`, `principal` | Um cliente pode ter mais de um contato. Telefone não deve ser chave única sem regra aprovada. |
 | `local_atendimento` | `id`, `prestadora_id`, `cliente_id`, `apelido`, `cep`, `logradouro`, `numero`, `complemento`, `bairro`, `cidade`, `uf`, `referencia` | Endereço pertencente ao cliente; pode faltar na abertura rápida. |
 | `equipamento` | `id`, `prestadora_id`, `cliente_id`, `local_id`, `tipo`, `marca`, `modelo`, `numero_serie`, `observacoes` | Equipamento pertence ao cliente e pode ser associado a um local. Modelo/serial podem estar ausentes inicialmente. |
-| `solicitacao` | `id`, `prestadora_id`, `solicitacao_origem_id`, `cliente_id`, `local_id`, `equipamento_id`, `aberta_por`, `canal_origem`, `servico_solicitado`, `relato_cliente`, `status`, `criado_em`, `atualizado_em`, `encerrada_em`, `motivo_encerramento`, `cancelada_em`, `motivo_cancelamento`, `arquivada_em`, `motivo_arquivamento` | Registro inicial do pedido, triagem e dados de origem. `solicitacao_origem_id` aponta para o modelo usado na cópia; cliente e relato são obrigatórios. Solicitação arquivada permanece preservada. |
+| `solicitacao` | `id`, `prestadora_id`, `solicitacao_origem_id`, `cliente_id`, `local_id`, `equipamento_id`, `aberta_por`, `canal_origem`, `servico_solicitado`, `relato_cliente`, `status`, `criado_em`, `atualizado_em`, `encerrada_em`, `motivo_encerramento`, `cancelada_em`, `motivo_cancelamento`, `arquivada_em`, `motivo_arquivamento` | Registro inicial do pedido, triagem e dados de origem. `solicitacao_origem_id` aponta para o modelo usado na cópia; cliente e relato são obrigatórios. O conteúdo editável pode ser reaproveitado; a nova linha começa com novo ID e estado `RECEBIDA`. Solicitação arquivada permanece preservada. |
 | `ordem_servico` | `id`, `prestadora_id`, `solicitacao_id`, `numero`, `status`, `criada_por`, `criado_em`, `atualizado_em`, `cancelada_em`, `motivo_cancelamento` | Criada somente após triagem e orçamento aprovado quando necessário. `solicitacao_id` é único por prestadora; os dados da solicitação são consultados pela relação, sem duplicação. |
 | `diagnostico` | `id`, `prestadora_id`, `solicitacao_id`, `registrado_por`, `descricao`, `criado_em` | Registra triagem/diagnóstico antes da criação da OS, separado do relato do cliente. |
-| `orcamento` | `id`, `prestadora_id`, `solicitacao_id`, `ordem_servico_id`, `orcamento_origem_id`, `tipo`, `versao`, `status`, `validade_ate`, `enviado_em`, `respondido_em`, `forma_resposta`, `observacao_resposta`, `criado_por` | O orçamento inicial pertence à solicitação; `ordem_servico_id` fica vazio até a conversão. Orçamentos adicionais vinculam-se também à OS. Manter registros anteriores preserva versões e aprovações. |
+| `orcamento` | `id`, `prestadora_id`, `solicitacao_id`, `ordem_servico_id`, `orcamento_origem_id`, `tipo`, `versao`, `status`, `validade_ate`, `enviado_em`, `respondido_em`, `forma_resposta`, `observacao_resposta`, `criado_por` | O orçamento inicial pertence à solicitação; `ordem_servico_id` fica vazio até a conversão. Orçamentos adicionais vinculam-se também à OS. Em uma cópia, os itens podem ser reaproveitados em novos registros com estado `RASCUNHO`; nenhuma decisão é herdada. |
 | `item_orcamento` | `id`, `prestadora_id`, `orcamento_id`, `descricao`, `quantidade`, `valor_unitario`, `ordem` | Preço é uma fotografia da proposta; não depende de catálogo de estoque, que está fora do MVP. Total calculado pela soma dos itens. |
 | `agendamento` | `id`, `prestadora_id`, `ordem_servico_id`, `tecnico_usuario_id`, `tipo`, `inicio_em`, `fim_em`, `status`, `observacao`, `criado_por` | `tipo`: inicial ou retorno. Cancelados deixam de ocupar horário; reagendamentos ficam no histórico. |
 | `execucao` | `id`, `prestadora_id`, `ordem_servico_id`, `agendamento_id`, `tecnico_usuario_id`, `diagnostico`, `servico_realizado`, `resultado`, `recebido_por`, `iniciada_em`, `finalizada_em`, `confirmada_em` | Registra o que foi feito e seu resultado. Pode haver vários registros por OS em caso de retorno. |
@@ -86,7 +86,7 @@ Tipos indicados são PostgreSQL. IDs usam `uuid`; datas e horários usam `timest
 6. O estado do orçamento é separado do estado da solicitação. Se o orçamento for recusado, a solicitação é arquivada; após a conversão, orçamentos adicionais mantêm seu próprio estado sem substituir o histórico da OS.
 7. A conclusão deve exigir resultado e confirmação do recebimento, conforme RN-07 e TA-12.
 8. Para impedir sobreposição concorrente no PostgreSQL, recomenda-se constraint de exclusão por `prestadora_id`, `tecnico_usuario_id` e intervalo `[inicio_em, fim_em)`, ignorando agendamentos cancelados. A validação apenas na tela não garante a regra RN-10 sob requisições simultâneas.
-9. A solicitação arquivada não é alterada pela cópia; cada cópia recebe novo ID, estado inicial e `solicitacao_origem_id`, e não herda orçamento, OS, agendamento ou execução.
+9. A solicitação arquivada não é alterada pela cópia; cada cópia recebe novo ID, estado inicial e `solicitacao_origem_id`. Copiam-se os campos de conteúdo editável e os itens do orçamento em novos registros de rascunho; não se copiam decisões, OS, agendamentos, execuções, links ou eventos.
 
 ## Índices iniciais
 
@@ -124,7 +124,6 @@ Recomenda-se usar colunas textuais com validação controlada por aplicação e 
 2. Aprovar o modelo PostgreSQL compartilhado com escopo por prestadora e definir se haverá proteção adicional por RLS.
 3. Definir se um usuário pode participar de mais de uma prestadora e se e-mail é único globalmente.
 4. Definir a numeração visível de OS e orçamentos por prestadora.
-5. Definir quais campos da solicitação são preenchidos por padrão ao criar uma cópia arquivada.
 6. Definir proteção, expiração, revogação e conteúdo autorizado pelo link do cliente.
 7. Definir dados mínimos da conclusão e limites/retenção de anexos.
 8. `solicitacao (prestadora_id, solicitacao_origem_id)` para localizar solicitações derivadas, quando usado.
