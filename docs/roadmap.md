@@ -9,7 +9,7 @@ Este roadmap organiza o trabalho pelas etapas 6.1 a 6.10 do Development Manual. 
 - **Arquitetura:** SaaS multiempresa e stack aprovados; autenticação e mecanismo final de isolamento seguem pendentes.
 - **Banco de dados:** modelo lógico proposto em `architecture/data-model.md`, ainda em revisão.
 - **Base técnica:** scaffold e endpoint de saúde existentes; as funcionalidades de negócio ainda não foram implementadas.
-- **Primeira entrega funcional:** cadastro de cliente e abertura rápida de solicitação, conforme critérios existentes.
+- **Primeira entrega funcional:** cadastro de cliente e abertura rápida de solicitação; a OS só será criada após triagem e orçamento aprovado quando necessário.
 
 ## Etapas do ciclo de desenvolvimento
 
@@ -17,11 +17,11 @@ Este roadmap organiza o trabalho pelas etapas 6.1 a 6.10 do Development Manual. 
 |---|---|---|---|
 | **6.1 Preparação e alinhamento** | Em andamento | Confirmar objetivos, responsáveis, restrições e critérios para considerar o MVP pronto. | Escopo de entrega e critérios de aceite do MVP alinhados. |
 | **6.2 Estratégia e requisitos** | Em andamento | Consolidar o escopo, as histórias e prioridades nos documentos existentes. | Primeira entrega funcional e itens fora do MVP claramente delimitados. |
-| **6.3 Análise** | Em revisão | Fechar regras operacionais, estados da OS e o recorte entre solicitação e OS; revisar o modelo lógico. | Regras e entidades necessárias à primeira entrega sem ambiguidades bloqueadoras. |
+| **6.3 Análise** | Em revisão | Fechar regras da solicitação, triagem, orçamento e OS; revisar o modelo lógico para manter esses registros separados. | Regras e entidades necessárias à primeira entrega sem ambiguidades bloqueadoras. |
 | **6.4 Arquitetura e projeto técnico** | Parcialmente concluída | Stack e monólito modular aprovados; fechar criação da prestadora, autenticação, vínculo de usuários e isolamento. | Acesso multiempresa e modelo de dados inicial definidos antes de persistir dados operacionais. |
-| **6.5 Planejamento de execução** | Em andamento | Transformar a primeira fatia em tarefas pequenas com critérios de aceite e impacto conhecido. | Tarefas de cadastro de cliente e solicitação prontas para execução. |
+| **6.5 Planejamento de execução** | Em andamento | Transformar a primeira fatia em tarefas pequenas com critérios de aceite e impacto conhecido. | Tarefas de cadastro de cliente, solicitação, triagem e conversão em OS prontas para execução. |
 | **6.6 Migração e dados** | Não aplicável no momento | Não há migração de dados existentes prevista para o MVP. As migrations de esquema do banco serão tratadas na implementação. | Reavaliar se surgir uma fonte de dados legado a importar. |
-| **6.7 Implementação** | Base técnica iniciada; negócio pendente | Implementar uma fatia vertical por vez, mantendo documentação e contrato da API sincronizados. | Primeira fatia funcional concluída conforme seus critérios de aceite. |
+| **6.7 Implementação** | Base técnica iniciada; negócio pendente | Implementar cadastro de cliente e fluxo de solicitação até a conversão elegível em OS, mantendo API e banco sincronizados. | Primeira fatia funcional concluída conforme seus critérios de aceite. |
 | **6.8 Validação e qualidade** | Pendente | Conferir critérios funcionais, isolamento entre prestadoras, uso em celular e homologação com o prestador. | Fluxos críticos aceitos e problemas bloqueadores resolvidos. |
 | **6.9 Go-Live** | Pendente | Definir hospedagem, domínio, configuração, publicação e procedimento de retorno. | Checklist de publicação e verificações pós-deploy definidos e executados. |
 | **6.10 Operação e evolução** | Pendente | Preparar suporte, operação e priorização da evolução após o uso real. | Responsáveis e rotina de acompanhamento definidos para o MVP publicado. |
@@ -29,16 +29,16 @@ Este roadmap organiza o trabalho pelas etapas 6.1 a 6.10 do Development Manual. 
 ## Próxima sequência
 
 1. Definir criação da prestadora, autenticação, convite e vínculo de usuários.
-2. Fechar o modelo inicial da OS: solicitação separada ou mesma entidade, estados e transições.
-3. Revisar o modelo lógico à luz dessas decisões e confirmar o isolamento multiempresa.
-4. Preparar tarefas executáveis para cadastro de cliente e abertura rápida de solicitação, usando os critérios já existentes.
-5. Implementar essa fatia, incluindo migrations necessárias, e validar seu comportamento.
+2. Detalhar estados e transições da solicitação, triagem, orçamento recusado e conversão em OS.
+3. Revisar o modelo lógico para refletir solicitação e OS separadas e confirmar o isolamento multiempresa.
+4. Preparar tarefas para cadastro de cliente, solicitação, triagem e conversão, usando os critérios existentes.
+5. Implementar essa fatia, incluindo migrations necessárias, e validar que a OS só surge quando os critérios de conversão forem atendidos.
 6. Seguir para orçamento, agenda, execução e histórico conforme os requisitos existentes.
 7. Após a aprovação final do protótipo, registrar a referência visual aprovada e refiná-la durante a implementação da interface.
 
 ## Pendências para etapas posteriores
 
-- Recusa de orçamento e seu efeito sobre a OS.
+- Se a recusa do orçamento encerra a solicitação ou permite revisão/novo orçamento.
 - Duração, reagendamento e histórico de horários.
 - Dados obrigatórios para conclusão.
 - Segurança, expiração e revogação do link do cliente.
