@@ -12,12 +12,14 @@ Este diretório reúne as fontes canônicas do produto e da implementação. Ant
 | [Design e protótipo](design.md) | Telas, diretrizes visuais e validação do protótipo |
 | [Roadmap](roadmap.md) | Etapa atual, próximos marcos e condições para avançar |
 
-## Arquitetura
+## Arquitetura e API
 
 | Documento | Fonte de verdade para |
 |---|---|
 | [Arquitetura](architecture.md) | Visão técnica aprovada e decisões ainda pendentes |
 | [Modelo lógico de dados](architecture/data-model.md) | Entidades, relacionamentos, integridade e índices propostos |
+| [Documentação da API](api.md) | Endpoints atualmente implementados e instruções de uso |
+| [Contrato OpenAPI](../backend/openapi.yaml) | Especificação técnica dos endpoints disponíveis |
 | [ADR 001 — Base técnica](decisions/001-arquitetura-base.md) | Registro das decisões de arquitetura aprovadas |
 
 ## Desenvolvimento
@@ -26,4 +28,4 @@ As instruções para agentes e colaboradores ficam no [AGENTS.md](../AGENTS.md),
 
 ## Regra de manutenção
 
-Mantenha cada informação em uma única fonte canônica. Use o README principal como índice e guia rápido; detalhes de produto, requisitos, regras, design, arquitetura e planejamento ficam nos documentos acima. Não crie documentos paralelos para repetir conteúdo existente.
+Mantenha cada informação em uma única fonte canônica. Use o README principal como índice e guia rápido; detalhes de produto, requisitos, regras, design, arquitetura, API e planejamento ficam nos documentos acima. Não crie documentos paralelos para repetir conteúdo existente.
