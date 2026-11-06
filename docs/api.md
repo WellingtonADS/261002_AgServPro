@@ -56,7 +56,7 @@ O valor `UP` é retornado pelo controller. Este endpoint confirma que a aplicaç
 
 A forma de autenticação ainda não foi escolhida. Portanto, os códigos de autenticação estão previstos, mas os endpoints de login e sessão ficam para depois dessa decisão.
 
-## Primeira fatia: clientes e ordens de serviço
+## Primeira fatia: clientes e solicitações
 
 | Método e rota proposta | Uso |
 |---|---|
@@ -64,20 +64,22 @@ A forma de autenticação ainda não foi escolhida. Portanto, os códigos de aut
 | `POST /api/v1/customers` | Cadastrar cliente e contato principal |
 | `GET /api/v1/customers/{customerId}` | Consultar cliente, contatos, locais e equipamentos |
 | `PATCH /api/v1/customers/{customerId}` | Atualizar dados permitidos do cliente |
-| `GET /api/v1/service-orders?status=&customerId=&equipmentId=&page=&size=` | Consultar a fila e o histórico |
-| `POST /api/v1/service-orders` | Abrir solicitação/OS para cliente existente |
-| `GET /api/v1/service-orders/{orderId}` | Consultar os dados e o estado atual da OS |
-| `PATCH /api/v1/service-orders/{orderId}` | Corrigir relato, serviço solicitado, local ou equipamento |
-| `POST /api/v1/service-orders/{orderId}/transitions` | Solicitar uma mudança de estado validada pelo backend |
+| `GET /api/v1/service-requests?status=&customerId=&page=&size=` | Consultar solicitações e fila de triagem |
+| `POST /api/v1/service-requests` | Registrar solicitação para cliente existente |
+| `GET /api/v1/service-requests/{requestId}` | Consultar solicitação, triagem, orçamento e eventual OS vinculada |
+| `PATCH /api/v1/service-requests/{requestId}` | Atualizar relato, serviço pedido, local ou equipamento enquanto permitido |
+| `POST /api/v1/service-requests/{requestId}/triage` | Registrar resultado da triagem e indicar se orçamento é necessário |
+| `GET/POST /api/v1/service-requests/{requestId}/budgets` | Consultar ou criar orçamento da solicitação |
+| `POST /api/v1/service-requests/{requestId}/conversion` | Converter em OS quando a triagem e as aprovações necessárias permitirem |
 
-Para manter o primeiro corte simples, a proposta trata a solicitação inicial como uma OS no estado `SOLICITADO` ou `AGUARDANDO_INFORMACOES`; não cria uma segunda entidade `request`. A regra exata para escolher o estado e o conjunto de transições precisa acompanhar o fechamento de [Regras de negócio](business-rules.md).
+A solicitação e a OS são recursos separados. A solicitação é criada primeiro e passa pela triagem; se houver orçamento necessário, a conversão em OS só ocorre após sua aprovação. Quando a triagem indicar que não é necessário orçamento, a solicitação pode ser convertida após a triagem. Não há endpoint de criação direta de OS na primeira etapa.
 
-A abertura usa cliente já cadastrado. Para o fluxo rápido do WhatsApp, a interface pode cadastrar o cliente e depois criar a OS usando os dois endpoints. O cliente pode ser criado sem endereço ou equipamento.
+A solicitação usa cliente já cadastrado. No fluxo rápido do WhatsApp, a interface pode cadastrar o cliente e depois registrar a solicitação. O cliente e a solicitação podem não ter endereço ou equipamento no início; isso não cria nem libera uma OS.
 
-Exemplo proposto de criação:
+Exemplo proposto de criação de solicitação:
 
 ```http
-POST /api/v1/service-orders
+POST /api/v1/service-requests
 Content-Type: application/json
 ```
 
@@ -92,11 +94,11 @@ Content-Type: application/json
 }
 ```
 
-O backend define `status` e `providerId`. Eles não são aceitos do corpo da requisição. Campos obrigatórios e regra de estado inicial serão fechados com os critérios TA-03, TA-04 e TA-15.
+O backend define o estado inicial e o escopo da prestadora; não aceita `status` ou `providerId` do corpo. A criação retorna uma solicitação, nunca uma OS. A operação de conversão deve verificar no backend a triagem concluída e a aprovação do orçamento quando exigido.
 
 ### Cadastro completo do cliente
 
-Para manter o primeiro cadastro enxuto, cliente, contato principal e OS podem ser criados no fluxo inicial. Contatos, locais e equipamentos adicionais usam sub-recursos:
+Para manter o primeiro cadastro enxuto, cliente, contato principal e solicitação podem ser criados no fluxo inicial. Contatos, locais e equipamentos adicionais usam sub-recursos:
 
 | Método e rota proposta | Uso |
 |---|---|
@@ -113,8 +115,8 @@ Os detalhes desses sub-recursos também aparecem na consulta de `GET /customers/
 
 | Recurso | Rotas propostas | Requisitos relacionados |
 |---|---|---|
-| Orçamentos | `GET/POST /api/v1/service-orders/{orderId}/budgets`; `GET/PATCH /api/v1/budgets/{budgetId}`; `POST /api/v1/budgets/{budgetId}/decisions` | TA-06 e TA-10 |
-| Agenda | `GET /api/v1/appointments?from=&to=&technicianId=&status=`; `POST /api/v1/service-orders/{orderId}/appointments`; `GET/PATCH /api/v1/appointments/{appointmentId}` | TA-07, RN-10 a RN-13 |
+| Orçamentos | `GET/POST /api/v1/service-requests/{requestId}/budgets`; após conversão, decisões de serviço adicional podem ser vinculadas à OS | TA-06 e TA-10 |
+| Ordens de serviço | `GET /api/v1/service-orders?status=&customerId=&page=&size=`; `GET /api/v1/service-orders/{orderId}`; `POST /api/v1/service-requests/{requestId}/conversion` | TA-19 |\n| Agenda | `GET /api/v1/appointments?from=&to=&technicianId=&status=`; `POST /api/v1/service-orders/{orderId}/appointments`; `GET/PATCH /api/v1/appointments/{appointmentId}` | TA-07, RN-10 a RN-13 |
 | Execução | `GET/POST /api/v1/service-orders/{orderId}/executions`; `PATCH /api/v1/executions/{executionId}` | TA-08, TA-09, TA-11 e TA-12 |
 | Histórico | `GET /api/v1/service-orders/{orderId}/events` | TA-13 e TA-14 |
 
@@ -133,9 +135,9 @@ O formato do corpo de erro deve ser padronizado antes da implementação dos end
 ## Decisões para fechar antes do contrato OpenAPI da primeira fatia
 
 1. Confirmar nomes em inglês para rotas e JSON.
-2. Confirmar que a solicitação inicial e a OS são o mesmo recurso.
+2. A separação solicitação/OS está definida: fechar payloads, estados e operação de conversão.
 3. Fechar autenticação, vínculo usuário–prestadora e regra de isolamento.
-4. Definir campos obrigatórios e estado inicial de uma OS incompleta.
+4. Definir campos obrigatórios e estado inicial da solicitação incompleta.
 5. Definir o formato comum de paginação e erro.
 
 ## Manutenção
