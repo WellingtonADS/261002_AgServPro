@@ -18,6 +18,8 @@
 | US-10 | Prestador | Consultar o histórico por cliente ou equipamento. |
 | US-11 | Prestador | Registrar rapidamente pedidos recebidos pelo WhatsApp, mesmo com endereço ou equipamento pendentes. |
 | US-12 | Prestador | Abrir uma cópia completa e editável de uma solicitação arquivada e salvar uma nova, preservando o registro original. |
+| US-13 | Administrador SaaS | Provisionar o acesso inicial do diretor da prestadora. |
+| US-14 | Diretor | Acessar o sistema e concluir a configuração inicial da prestadora. |
 | CL-01 | Cliente | Consultar o orçamento pelo link e aprovar ou recusar sem criar conta. |
 | CL-02 | Cliente | Receber data, faixa de horário e responsável; o envio pode ser manual no MVP. |
 | CL-03 | Cliente | Receber resumo do serviço realizado e do resultado. |
@@ -47,9 +49,12 @@
 | TA-18 | Ao concluir a OS, mostrar ao cliente resumo do serviço e resultado. |
 | TA-19 | Criar OS vinculada à solicitação somente após triagem concluída e, quando necessário, aprovação do orçamento; permitir conversão sem orçamento quando a triagem indicar que ele não é necessário. |
 | TA-20 | Ao recusar orçamento, arquivar a solicitação sem criar OS. Permitir abrir uma cópia completa e editável do conteúdo, incluindo itens do orçamento como novo rascunho. Ao salvar, criar solicitação com novo ID e estado Recebida, sem herdar aprovação/recusa, OS, agendamentos, execução, links ou eventos; preservar o registro original. |
+| TA-21 | O administrador SaaS provisiona o acesso inicial de um usuário com perfil Diretor para a prestadora. |
+| TA-22 | O diretor acessa esse usuário e conclui a configuração inicial da prestadora. |
 
 ## Observações
 
 - O envio pelo WhatsApp é manual no MVP; não haverá importação automática de conversas.
+- O responsável pela criação de usuários de gerência/colaborador e a matriz de permissões dos perfis ainda precisam ser definidos.
 - Estes são critérios de aceitação funcional, não uma solicitação de testes automatizados.
 - Regras de transição e dados mínimos por estado estão em business-rules.md.
