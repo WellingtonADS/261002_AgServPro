@@ -20,6 +20,7 @@
 | US-12 | Prestador | Abrir uma cópia completa e editável de uma solicitação arquivada e salvar uma nova, preservando o registro original. |
 | US-13 | Administrador SaaS | Provisionar o acesso inicial do diretor da prestadora. |
 | US-14 | Diretor | Acessar o sistema e concluir a configuração inicial da prestadora. |
+| US-15 | Diretor | Criar, alterar e desativar acessos de gerência e colaborador na própria prestadora. |
 | CL-01 | Cliente | Consultar o orçamento pelo link e aprovar ou recusar sem criar conta. |
 | CL-02 | Cliente | Receber data, faixa de horário e responsável; o envio pode ser manual no MVP. |
 | CL-03 | Cliente | Receber resumo do serviço realizado e do resultado. |
@@ -51,10 +52,11 @@
 | TA-20 | Ao recusar orçamento, arquivar a solicitação sem criar OS. Permitir abrir uma cópia completa e editável do conteúdo, incluindo itens do orçamento como novo rascunho. Ao salvar, criar solicitação com novo ID e estado Recebida, sem herdar aprovação/recusa, OS, agendamentos, execução, links ou eventos; preservar o registro original. |
 | TA-21 | O administrador SaaS provisiona o acesso inicial de um usuário com perfil Diretor para a prestadora. |
 | TA-22 | O diretor acessa o sistema com a conta provisionada e conclui a configuração inicial da prestadora. |
+| TA-23 | O diretor pode criar, alterar, desativar e atribuir os perfis Gerência e Colaborador; não pode conceder perfil Administrador SaaS. |
 
 ## Observações
 
 - O envio pelo WhatsApp é manual no MVP; não haverá importação automática de conversas.
-- O responsável pela criação de usuários de gerência/colaborador e a matriz de permissões dos perfis ainda precisam ser definidos.
+- A matriz detalhada de permissões dos perfis está proposta em `business-rules.md` e aguarda validação.
 - Estes são critérios de aceitação funcional, não uma solicitação de testes automatizados.
 - Regras de transição e dados mínimos por estado estão em business-rules.md.
