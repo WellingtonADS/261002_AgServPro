@@ -1,0 +1,143 @@
+# Modelo lógico de dados — AgServPro
+
+**Status:** migration inicial de acesso aplicada no código; entidades operacionais ainda são proposta para revisão.
+**Banco aprovado:** PostgreSQL.
+**Escopo:** entidades do MVP e vínculos entre prestadora, atendimento, orçamento, agenda e execução.
+
+Este documento detalha o modelo conceitual citado em [architecture.md](../architecture.md). Os tipos e constraints são recomendações para orientar a implementação. Decisões abertas estão listadas ao final.
+
+## Premissas do modelo
+
+- **Decisão confirmada pelo responsável:** solicitação e OS são registros distintos. A OS é criada depois da triagem e, quando necessária, da aprovação do orçamento.
+- Orçamento recusado arquiva a solicitação sem criar OS. A cópia total reutiliza conteúdo editável (inclusive triagem e itens de orçamento), mas cria novos registros e não replica estados de decisão nem histórico operacional.
+- A solicitação pode ficar incompleta, sem local ou equipamento, conforme RN-01. Cliente, relato e origem bastam para registrá-la.
+- Cada solicitação pode originar no máximo uma OS. O orçamento inicial pertence à solicitação; orçamentos adicionais permanecem associados à solicitação e à OS já criada.
+- Uma OS pode ter vários agendamentos e registros de execução, permitindo reagendamento e visitas de retorno com histórico.
+- Cada registro operacional pertence a uma prestadora. O backend obtém o escopo a partir da identidade autenticada, nunca de um `prestadora_id` aceito do navegador.
+- Usuários e prestadoras são entidades separadas; a associação ocorre por `prestadora_usuario`. O administrador SaaS tem papel de plataforma; diretor, gerência e colaborador são papéis internos da prestadora.
+- O administrador SaaS provisiona o primeiro acesso do diretor; o diretor conclui a configuração da prestadora e cria os acessos de gerência e colaborador. A matriz de permissões ainda será validada.
+
+## Diagrama
+
+```mermaid
+erDiagram
+    PRESTADORA ||--o{ PRESTADORA_USUARIO : possui
+    USUARIO ||--o{ PRESTADORA_USUARIO : participa
+    PRESTADORA ||--o{ CLIENTE : atende
+    CLIENTE ||--o{ CLIENTE_CONTATO : possui
+    CLIENTE ||--o{ LOCAL_ATENDIMENTO : possui
+    CLIENTE ||--o{ EQUIPAMENTO : possui
+    LOCAL_ATENDIMENTO o|--o{ EQUIPAMENTO : instala
+    PRESTADORA ||--o{ SOLICITACAO : recebe
+    CLIENTE ||--o{ SOLICITACAO : solicita
+    LOCAL_ATENDIMENTO o|--o{ SOLICITACAO : indica
+    EQUIPAMENTO o|--o{ SOLICITACAO : envolve
+    SOLICITACAO ||--o{ DIAGNOSTICO : registra
+    SOLICITACAO ||--o{ ORCAMENTO : recebe
+    SOLICITACAO o|--o{ SOLICITACAO : copia_base
+    SOLICITACAO ||--o{ EVENTO_SOLICITACAO : registra
+    SOLICITACAO ||--o| ORDEM_SERVICO : converte_em
+    ORDEM_SERVICO ||--o{ ORCAMENTO : pode_ter
+    ORCAMENTO ||--o{ ITEM_ORCAMENTO : contem
+    ORDEM_SERVICO ||--o{ AGENDAMENTO : agenda
+    USUARIO ||--o{ AGENDAMENTO : atende
+    ORDEM_SERVICO ||--o{ EXECUCAO : registra
+    EXECUCAO ||--o{ MATERIAL_EXECUCAO : utiliza
+    EXECUCAO o|--o{ ANEXO : documenta
+    ORDEM_SERVICO ||--o{ ANEXO : possui
+    ORDEM_SERVICO ||--o{ EVENTO_OS : historico
+    SOLICITACAO ||--o{ LINK_CLIENTE : compartilha
+```
+
+A solicitação exige um cliente, mas pode não ter local ou equipamento no registro inicial. A OS referencia a solicitação de origem e só passa a existir depois da triagem e das aprovações necessárias.
+
+## Entidades e responsabilidades
+
+Tipos indicados são PostgreSQL. IDs usam `uuid`; datas e horários usam `timestamptz`; valores monetários usam `numeric(12,2)`.
+
+| Tabela | Campos principais | Regras e vínculos |
+|---|---|---|
+| `prestadora` | `id`, `nome`, `status`, `fuso_horario`, `criado_em`, `atualizado_em` | Raiz de propriedade dos dados operacionais. |
+| `usuario` | `id`, `nome`, `email`, `senha_hash`, `status`, `papel_plataforma`, `criado_em` | Identidade de acesso. `papel_plataforma` é nulo para usuários comuns e identifica o administrador SaaS; diretor, gerência e colaborador são papéis na associação à prestadora. E-mail é único sem diferenciar maiúsculas/minúsculas. |
+| `prestadora_usuario` | `prestadora_id`, `usuario_id`, `papel`, `status`, `criado_em` | Associação do usuário à prestadora; chave única `(prestadora_id, usuario_id)`. Papéis definidos: diretor, gerência e colaborador. Permissões por papel ainda pendentes. |
+| `cliente` | `id`, `prestadora_id`, `nome`, `observacoes`, `criado_em`, `atualizado_em` | Cadastro do cliente dentro da prestadora. |
+| `cliente_contato` | `id`, `prestadora_id`, `cliente_id`, `nome`, `telefone`, `email`, `principal` | Um cliente pode ter mais de um contato. Telefone não deve ser chave única sem regra aprovada. |
+| `local_atendimento` | `id`, `prestadora_id`, `cliente_id`, `apelido`, `cep`, `logradouro`, `numero`, `complemento`, `bairro`, `cidade`, `uf`, `referencia` | Endereço pertencente ao cliente; pode faltar na abertura rápida. |
+| `equipamento` | `id`, `prestadora_id`, `cliente_id`, `local_id`, `tipo`, `marca`, `modelo`, `numero_serie`, `observacoes` | Equipamento pertence ao cliente e pode ser associado a um local. Modelo/serial podem estar ausentes inicialmente. |
+| `solicitacao` | `id`, `prestadora_id`, `solicitacao_origem_id`, `cliente_id`, `local_id`, `equipamento_id`, `aberta_por`, `canal_origem`, `servico_solicitado`, `relato_cliente`, `status`, `criado_em`, `atualizado_em`, `encerrada_em`, `motivo_encerramento`, `cancelada_em`, `motivo_cancelamento`, `arquivada_em`, `motivo_arquivamento` | Registro inicial do pedido, triagem e dados de origem. `solicitacao_origem_id` aponta para o modelo usado na cópia; cliente e relato são obrigatórios. O conteúdo editável pode ser reaproveitado; a nova linha começa com novo ID e estado `RECEBIDA`. Solicitação arquivada permanece preservada. |
+| `ordem_servico` | `id`, `prestadora_id`, `solicitacao_id`, `numero`, `status`, `criada_por`, `criado_em`, `atualizado_em`, `cancelada_em`, `motivo_cancelamento` | Criada somente após triagem e orçamento aprovado quando necessário. `solicitacao_id` é único por prestadora; os dados da solicitação são consultados pela relação, sem duplicação. |
+| `diagnostico` | `id`, `prestadora_id`, `solicitacao_id`, `registrado_por`, `descricao`, `criado_em` | Registra triagem/diagnóstico antes da criação da OS, separado do relato do cliente. |
+| `orcamento` | `id`, `prestadora_id`, `solicitacao_id`, `ordem_servico_id`, `orcamento_origem_id`, `tipo`, `versao`, `status`, `validade_ate`, `enviado_em`, `respondido_em`, `forma_resposta`, `observacao_resposta`, `criado_por` | O orçamento inicial pertence à solicitação; `ordem_servico_id` fica vazio até a conversão. Orçamentos adicionais vinculam-se também à OS. Em uma cópia, os itens podem ser reaproveitados em novos registros com estado `RASCUNHO`; nenhuma decisão é herdada. |
+| `item_orcamento` | `id`, `prestadora_id`, `orcamento_id`, `descricao`, `quantidade`, `valor_unitario`, `ordem` | Preço é uma fotografia da proposta; não depende de catálogo de estoque, que está fora do MVP. Total calculado pela soma dos itens. |
+| `agendamento` | `id`, `prestadora_id`, `ordem_servico_id`, `tecnico_usuario_id`, `tipo`, `inicio_em`, `fim_em`, `status`, `observacao`, `criado_por` | `tipo`: inicial ou retorno. Cancelados deixam de ocupar horário; reagendamentos ficam no histórico. |
+| `execucao` | `id`, `prestadora_id`, `ordem_servico_id`, `agendamento_id`, `tecnico_usuario_id`, `diagnostico`, `servico_realizado`, `resultado`, `recebido_por`, `iniciada_em`, `finalizada_em`, `confirmada_em` | Registra o que foi feito e seu resultado. Pode haver vários registros por OS em caso de retorno. |
+| `material_execucao` | `id`, `prestadora_id`, `execucao_id`, `descricao`, `quantidade`, `unidade` | Registra materiais usados como descrição e quantidade; não movimenta estoque. |
+| `anexo` | `id`, `prestadora_id`, `ordem_servico_id`, `execucao_id`, `chave_objeto`, `nome_original`, `tipo_mime`, `tamanho_bytes`, `enviado_por`, `criado_em` | Arquivo binário fica em armazenamento de objetos; banco guarda metadados e vínculo. |
+| `evento_solicitacao` | `id`, `prestadora_id`, `solicitacao_id`, `tipo`, `status_anterior`, `status_novo`, `descricao`, `registrado_por`, `criado_em` | Histórico da entrada, triagem, decisões de orçamento, conversão e encerramento da solicitação. |
+| `evento_os` | `id`, `prestadora_id`, `ordem_servico_id`, `tipo`, `status_anterior`, `status_novo`, `descricao`, `registrado_por`, `criado_em` | Histórico da OS, incluindo cancelamento e reagendamento. |
+| `link_cliente` | `id`, `prestadora_id`, `solicitacao_id`, `token_hash`, `expira_em`, `revogado_em`, `criado_em` | Armazena hash do token, nunca o token em texto puro. O link acompanha orçamento e, após conversão, a OS relacionada; política de expiração e escopo ainda precisa ser definida. |
+
+## Regras de integridade e isolamento
+
+1. Toda tabela operacional deve conter `prestadora_id`.
+2. Referências entre tabelas operacionais devem validar a mesma prestadora. Recomenda-se unicidade composta, por exemplo `UNIQUE (prestadora_id, id)`, e FKs compostas como `(prestadora_id, cliente_id)`.
+3. `prestadora_usuario` deve validar o vínculo do usuário à prestadora antes de permitir atribuição como técnico, abertura ou edição de registros.
+4. O escopo da prestadora deve vir da identidade autenticada no backend; não aceitar o escopo do corpo ou dos parâmetros enviados pelo frontend.
+5. O cancelamento deve preservar a OS e seu histórico. Não apagar registros para representar cancelamento.
+6. O estado do orçamento é separado do estado da solicitação. Se o orçamento for recusado, a solicitação é arquivada; após a conversão, orçamentos adicionais mantêm seu próprio estado sem substituir o histórico da OS.
+7. A conclusão deve exigir resultado e confirmação do recebimento, conforme RN-07 e TA-12.
+8. Para impedir sobreposição concorrente no PostgreSQL, recomenda-se constraint de exclusão por `prestadora_id`, `tecnico_usuario_id` e intervalo `[inicio_em, fim_em)`, ignorando agendamentos cancelados. A validação apenas na tela não garante a regra RN-10 sob requisições simultâneas.
+9. A solicitação arquivada não é alterada pela cópia; cada cópia recebe novo ID, estado inicial e `solicitacao_origem_id`. Copiam-se os campos de conteúdo editável e os itens do orçamento em novos registros de rascunho; não se copiam decisões, OS, agendamentos, execuções, links ou eventos.
+
+## Índices iniciais
+
+- `prestadora_usuario (usuario_id, status)` para resolver as prestadoras disponíveis ao usuário.
+- `cliente (prestadora_id, nome)` para pesquisa de clientes.
+- `cliente_contato (prestadora_id, telefone)` para localizar cliente pelo telefone; sem unicidade até haver regra contra duplicados.
+- `equipamento (prestadora_id, cliente_id)` para histórico por cliente/equipamento.
+- `solicitacao (prestadora_id, status, criado_em)` para entrada e triagem.
+- `solicitacao (prestadora_id, cliente_id, criado_em)` para localizar pedidos do cliente.
+- `ordem_servico (prestadora_id, status, criado_em)` para a fila operacional.
+- `ordem_servico (prestadora_id, solicitacao_id)` único para garantir uma OS por solicitação.
+- `agendamento (prestadora_id, tecnico_usuario_id, inicio_em, fim_em)` para agenda e checagem de conflito.
+- `orcamento (prestadora_id, solicitacao_id, versao)` para histórico de propostas da solicitação.
+- `evento_solicitacao (prestadora_id, solicitacao_id, criado_em)` para timeline pré-OS.
+- `evento_os (prestadora_id, ordem_servico_id, criado_em)` para timeline da OS.
+- `link_cliente (token_hash)` único para busca do link recebido pelo cliente.
+- `solicitacao (prestadora_id, solicitacao_origem_id)` para localizar solicitações derivadas, quando usado.
+
+Índices devem ser confirmados pelas consultas implementadas; estes são os índices iniciais esperados pelos fluxos do MVP.
+
+## Estados
+
+Os estados abaixo seguem a proposta em [business-rules.md](../business-rules.md) e ainda precisam da validação ali indicada:
+
+- **Solicitação:** recebida, aguardando informações, em triagem, aguardando diagnóstico, aguardando orçamento, aguardando aprovação, convertida em OS, arquivada ou cancelada.
+- **OS:** aberta, agendada, em atendimento, aguardando peça/retorno, concluída ou cancelada.
+- **Orçamento:** rascunho, enviado, aprovado, recusado ou cancelado.
+- **Agendamento:** agendado, confirmado, em atendimento, concluído ou cancelado.
+- **Vínculo de usuário:** convite pendente, ativo ou suspenso.
+
+Recomenda-se usar colunas textuais com validação controlada por aplicação e migração, evitando enums rígidos antes de o fluxo de estados ser fechado.
+
+## Decisões já aplicadas na migration inicial
+
+- Identidade usa e-mail único global e senha armazenada como hash; o papel de plataforma é distinto dos papéis em `prestadora_usuario`.
+- O Administrador SaaS provisiona uma prestadora em `PENDENTE_CONFIGURACAO` e o vínculo inicial `DIRETOR`.
+- Convites guardam somente hash do token, com expiração, aceite e revogação.
+- `prestadora`, `prestadora_usuario`, `convite_acesso` e `auditoria_saas` usam RLS. O contexto é definido pelo backend na transação com `app.usuario_id`, `app.prestadora_id` ou `app.admin_saas`; políticas de prestadora confirmam o vínculo ativo do usuário.
+- O usuário de banco da aplicação não pode ser superusuário nem receber `BYPASSRLS`. O Compose cria um usuário de aplicação separado do administrador local do PostgreSQL; em produção, credenciais de migração e de execução devem ser separadas antes do deploy.
+- A migration ainda não cria as tabelas operacionais de clientes, solicitações ou OS; elas dependem da revisão do modelo e serão acrescentadas nas migrations seguintes.
+
+## Pontos a confirmar antes das próximas migrations
+
+1. Validar a matriz de permissões dos perfis.
+2. Definir se um usuário pode participar de mais de uma prestadora; o esquema atual permite múltiplos vínculos.
+3. Definir a numeração visível de OS e orçamentos por prestadora.
+4. Definir proteção, expiração, revogação e conteúdo autorizado pelo link do cliente.
+5. Definir dados mínimos da conclusão e limites/retenção de anexos.
+6. Confirmar a regra de duração e a constraint final de conflito de agenda.
+
+## Fora deste modelo inicial
+
+Assinaturas, faturamento do SaaS, estoque, financeiro completo, notificações automáticas, integração automática com WhatsApp/Instagram e portal autenticado do cliente ficam fora do banco do MVP enquanto permanecerem fora do escopo.

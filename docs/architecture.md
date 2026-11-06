@@ -1,49 +1,54 @@
 # Arquitetura e decisões técnicas
 
-**Status geral:** SaaS multiempresa aprovado; stack e mecanismos técnicos ainda pendentes.
+**Status geral:** SaaS multiempresa, provisionamento pelo Administrador SaaS, sessão por e-mail/senha, PostgreSQL com RLS e stack aprovados. A primeira camada de acesso está implementada; a matriz completa de permissões, gestão de usuários internos, RLS das tabelas operacionais, deploy e monitoramento ainda precisam ser concluídos.
 
 ## Proposta atual
 
 - Aplicação web responsiva para computador e celular.
 - SaaS para várias prestadoras, com isolamento dos dados por prestadora desde a primeira versão.
 - Monólito modular para manter simples o desenvolvimento e a operação inicial.
-- PostgreSQL como banco proposto.
-- Perfis propostos: proprietário/gestor e técnico.
+- Banco relacional PostgreSQL com migrations versionadas por Flyway.
+- Perfis na plataforma: administrador SaaS com controle total do sistema. Perfis de cada prestadora: diretor, gerência e colaborador (técnico de campo). A matriz detalhada de permissões está em validação.
 - Cliente final sem conta; consulta e resposta ao orçamento por link.
 - Operação online no MVP; modo offline não foi aprovado.
 - Fotos e anexos vinculados à OS, em armazenamento separado do banco.
 
 ## Decisões pendentes
 
-1. Stack, hospedagem e deploy.
-2. Como aplicar e validar o isolamento por prestadora no banco e na aplicação.
-3. Autenticação e permissões para proprietário, técnico e cliente por link.
-4. Expiração, revogação e proteção do link do cliente.
-5. Armazenamento, limites e retenção de fotos/anexos.
-6. Quantidade de técnicos cadastráveis no MVP; conflito se aplica ao técnico atribuído.
+1. Validar a matriz completa de permissões e concluir a gestão de acessos de gerência e colaborador.
+2. Estender e validar o isolamento por prestadora nas tabelas operacionais, com contexto transacional no backend.
+3. Definir expiração, revogação e proteção do link do cliente.
+4. Armazenamento, limites e retenção de fotos/anexos.
+5. Quantidade de técnicos cadastráveis no MVP; conflito se aplica ao técnico atribuído.
+6. Hospedagem e deploy.
 7. Confirmar se conexão contínua atende ao trabalho em campo.
 
 ## Decisão aprovada
 
 - O produto será SaaS multiempresa desde o MVP. Os registros operacionais devem pertencer a uma prestadora, e o acesso de uma prestadora não pode expor dados de outra.
-- A decisão foi confirmada pelo responsável em 2026-10-08. A tecnologia usada para impor esse isolamento permanece pendente.
+- Solicitação e OS são registros distintos. A OS só é criada após a triagem e, quando o orçamento for necessário, após sua aprovação. Decisão confirmada pelo responsável em 2026-11-06.
+- Quando o cliente recusa o orçamento, a solicitação é arquivada sem gerar OS. Ela pode ser usada como modelo para criar uma solicitação nova, sem alterar a original.
+- O administrador do sistema SaaS provisiona o acesso inicial do diretor; o diretor conclui a configuração da prestadora e cria os acessos de gerência e colaborador. Decisão confirmada pelo responsável em 2026-11-06.
+- A autenticação usa e-mail e senha em sessão com cookie HttpOnly e proteção CSRF. Convites têm token de uso único armazenado como hash e expiram em 24 horas. O PostgreSQL aplica RLS às tabelas de acesso, com contexto transacional definido pelo backend. O provisionamento global do Administrador SaaS é auditado. Decisão confirmada pelo responsável em 2026-11-06.
+- A decisão de SaaS multiempresa foi confirmada pelo responsável em 2026-10-08; a implementação de RLS começa pela base de acesso e será estendida às tabelas operacionais.
+- Stack aprovada pelo responsável em 2026-10-08: Java 21 + Spring Boot; API REST/JSON documentada com OpenAPI; PostgreSQL + Flyway; Vue 3 + TypeScript + Vite + Vue Router; PrimeVue com tema personalizado. O protótipo HTML continua em validação e será referência visual após aprovação.
 
-## Recomendação técnica para o MVP — aguardando aprovação
+## Arquitetura aprovada para o MVP
 
-| Camada | Recomendação | Motivo |
+| Camada | Decisão | Motivo |
 |---|---|---|
 | Backend | Java 21 + Spring Boot, como monólito modular | Aproveita a experiência existente do projeto com Java 21 e mantém regras, autenticação e integrações no backend. |
 | API | REST/JSON, versionada em `/api/v1`, descrita com OpenAPI | Atende formulários, agenda e fluxo operacional; mantém contrato claro entre frontend e backend. |
 | Banco | PostgreSQL + Flyway | Relacional, adequado aos vínculos entre prestadoras, usuários, clientes, solicitações e OS; migrations versionadas. |
 | Frontend | Vue 3 + TypeScript + Vite + Vue Router | Interface responsiva separada da API; Vite evita adicionar renderização de servidor, que não é necessária para o painel operacional. |
 | Componentes visuais | PrimeVue com tema personalizado | Acelera formulários, calendário, tabelas e diálogos, permitindo aproximar cores e estados do protótipo aprovado. |
-| Design | Usar o protótipo HTML aprovado como referência visual | Preserva o fluxo validado; definir tokens e componentes compartilhados durante a implementação. Figma fica opcional. |
+| Design | Usar o protótipo HTML em validação como referência visual após aprovação | Preserva o fluxo validado; definir tokens e componentes compartilhados durante a implementação. Figma fica opcional. |
 
-Para o isolamento multiempresa, cada dado operacional terá `prestadora_id`. O backend obterá a prestadora a partir da identidade autenticada e aplicará esse escopo em todas as operações. O identificador enviado pelo navegador não será suficiente para conceder acesso.
+Para o isolamento multiempresa, cada dado operacional terá `prestadora_id`. O backend obterá a prestadora a partir da identidade autenticada, aplicará esse escopo em todas as operações e definirá o contexto transacional lido pelas políticas RLS. O identificador enviado pelo navegador não será suficiente para conceder acesso.
 
 **Ordem da primeira entrega:** autenticação e vínculo usuário–prestadora; cadastro de cliente; abertura de solicitação rápida. A parte funcional segue TA-01, TA-03, TA-04 e TA-15. O layout final será aplicado após a aprovação do protótipo.
 
-Hospedagem, domínio e estratégia final de sessão ainda precisam ser definidos antes do deploy. Esta stack é uma recomendação e depende de aprovação antes do scaffold.
+Hospedagem e domínio ainda precisam ser definidos antes do deploy. Esta stack foi aprovada em 2026-10-08.
 
 Referências: [Spring Boot](https://spring.io/projects/spring-boot), [Vue com TypeScript](https://vuejs.org/guide/typescript/overview), [Vite](https://vite.dev/guide/), [PrimeVue](https://primevue.dev/components/), [OpenAPI](https://www.openapis.org/).
 
@@ -53,10 +58,25 @@ O primeiro fluxo técnico pode ser preparado sem depender da aprovação visual:
 
 Critérios já definidos para esse incremento: TA-01, TA-03, TA-04 e TA-15 em `requirements.md`; RN-01 e RN-02 em `business-rules.md`. Assim, não é necessário criar outra especificação para esse fluxo.
 
-Antes de criar tabelas, migrations ou autenticação, aprovar a stack e a estratégia de sessão. A camada visual do fluxo será ajustada ao protótipo depois da aprovação.
+O primeiro incremento de acesso cria a base e implementa sessão, provisionamento do diretor, aceite de convite e configuração inicial da prestadora. A gestão de acessos internos continua pendente; a camada visual será ajustada ao protótipo após aprovação.
 
-## Modelo conceitual inicial
+## Modelo de dados
 
-Entidades candidatas, sujeitas à definição do produto e da stack: Prestadora, Usuário, Cliente, Local de atendimento, Equipamento, Solicitação/OS, Orçamento, Item de orçamento, Agendamento, Registro de execução, Anexo e Histórico de alterações.
+A proposta lógica de entidades, vínculos, integridade, índices e pendências está em [Modelo lógico de dados](architecture/data-model.md). A migration inicial implementa as tabelas de acesso; as tabelas operacionais ainda precisam de revisão antes de serem criadas.
 
-Antes de criar tabelas ou migrations, revisar o modelo com as regras de acesso e a decisão sobre SaaS multiempresa.
+## Camadas de negócio e organização do backend (proposta)
+
+Esta separação descreve o destino do backend; ainda não está implementada. A organização seguirá o monólito modular aprovado, com módulos agrupados por funcionalidade e regras de negócio protegidas da tecnologia de transporte e persistência.
+
+| Camada | Responsabilidade |
+|---|---|
+| API / apresentação | Receber chamadas REST, validar formato dos dados, chamar um caso de uso e montar a resposta HTTP. Não concentra regras do negócio. |
+| Aplicação | Executar casos de uso e coordenar etapas da operação, transação e acesso aos dados. |
+| Domínio | Representar conceitos e aplicar regras e transições do negócio, como quando uma solicitação pode avançar para execução. Deve evitar dependência de Spring, HTTP ou banco. |
+| Infraestrutura | Implementar persistência e integrações usadas pelos casos de uso, inicialmente PostgreSQL/Flyway quando essa parte for construída. |
+
+O fluxo esperado é: endpoint → caso de uso → regras do domínio → persistência → resposta. Exemplo: abrir solicitação recebe os dados pela API, executa as validações e regras definidas para a solicitação, salva o resultado e devolve a resposta. Os critérios funcionais permanecem em `requirements.md` e `business-rules.md`; este desenho não os duplica.
+
+Os módulos devem acompanhar as funcionalidades necessárias, por exemplo `clientes` e `solicitacoes` no primeiro incremento. Outras áreas, como agenda, orçamento e execução de OS, entram quando forem implementadas. Cada módulo mantém seus componentes próximos; código compartilhado só deve ser extraído quando houver reutilização real.
+
+O escopo da prestadora é verificado no backend a partir da identidade autenticada. O mecanismo de sessão e RLS está implementado para as tabelas de acesso; estas camadas serão estendidas às tabelas operacionais à medida que os módulos forem criados.

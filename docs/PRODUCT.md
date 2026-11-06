@@ -12,15 +12,19 @@ Prestadores autônomos e pequenas operações de instalação, limpeza e manuten
 
 ## Resultado esperado
 
-Permitir que o prestador acompanhe um atendimento desde a solicitação até o encerramento, mantendo orçamento, agenda, ordem de serviço e histórico ligados ao cliente e ao equipamento.
+Permitir que o prestador acompanhe o atendimento desde a solicitação, passando por triagem e orçamento quando necessário, até a ordem de serviço e o encerramento. A solicitação e a OS são registros distintos; a OS só é criada após a triagem e, quando houver orçamento, sua aprovação.
 
 ## Escopo do MVP
+
+- O administrador SaaS provisiona o acesso inicial do diretor; o diretor conclui a configuração da prestadora. Perfis internos: diretor, gerência e colaborador.
 
 - Cadastro de clientes, contatos e locais de atendimento.
 - Cadastro simples de equipamentos.
 - Cadastro rápido de solicitações recebidas pelo WhatsApp, mesmo com dados pendentes.
-- Triagem e distinção entre relato do cliente e diagnóstico técnico.
-- Orçamento com registro de aprovação ou recusa.
+- Triagem da solicitação e distinção entre relato do cliente e diagnóstico técnico.
+- Orçamento vinculado à solicitação, com registro de aprovação ou recusa quando necessário.
+- Arquivamento de solicitações com orçamento recusado e possibilidade de abrir uma cópia completa e editável como base para uma nova solicitação.
+- Conversão da solicitação em OS somente após triagem e, quando exigido, aprovação do orçamento.
 - Agenda e atribuição de responsável, bloqueando conflito de horário para o mesmo técnico.
 - Ordem de serviço consultável e atualizável no celular.
 - Registro de execução, materiais, observações, fotos e resultado.
@@ -40,7 +44,7 @@ Permitir que o prestador acompanhe um atendimento desde a solicitação até o e
 
 ## Premissas e pendências
 
-- SaaS para várias prestadoras ainda precisa de confirmação.
+- SaaS multiempresa aprovado para o MVP. O mecanismo técnico de isolamento está pendente.
 - O MVP foi pensado para uso com internet; operação offline não foi aprovada.
 - Atendimento comercial sem exigência de PMOC ainda precisa ser delimitado.
 - O protótipo HTML corrigido aguarda aprovação final de responsividade.
